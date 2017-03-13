@@ -4,7 +4,11 @@ FinTrip is an android app that allows a user to record to-buy item before and du
 
 ## User Stories
 
-The following **required** functionality is completed:
+[Definition]
+User: To purchase on Owner's behalf from abroad.
+Owner: The one who request user to buy the goods.
+
+The following **required** functionality:
 
 * [ ] User can add new to-buy item from camera (or text).
 * [ ] User can add info for the item.
@@ -18,22 +22,15 @@ The following **required** functionality is completed:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/c4Uei04.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
-## Notes
-
-Chao-Jung Chang
-
 ## Open-source libraries used
-
-- [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
-- [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2017 Chao-Jung Chang, Irene Hsieh, Renee Wu (Order by alphabet)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
