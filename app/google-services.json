@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "766425952942",
+    "firebase_url": "https://fintrip-83b71.firebaseio.com",
+    "project_id": "fintrip-83b71",
+    "storage_bucket": "fintrip-83b71.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766425952942:android:67b0f0a35e38811a",
+        "android_client_info": {
+          "package_name": "com.irene.fintrip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766425952942-ptbt2dsg0vbm5gp6bsvhoudgrn5mnbh6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.irene.fintrip",
+            "certificate_hash": "0adb1dbc99fa7e46e9604cadac2340201d0b4190"
+          }
+        },
+        {
+          "client_id": "766425952942-mtm2gb9jgde4hafv6e4qiim7bp39vme0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArPon3tM0VWFUhQhfcp4kAM3VSWOBggrk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766425952942-mtm2gb9jgde4hafv6e4qiim7bp39vme0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
