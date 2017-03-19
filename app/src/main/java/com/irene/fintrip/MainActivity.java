@@ -2,11 +2,8 @@ package com.irene.fintrip;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-<<<<<<< HEAD
-=======
-import android.view.View;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,7 +28,6 @@ import com.irene.fintrip.models.User;
 
 import java.util.HashMap;
 import java.util.Map;
->>>>>>> origin/merge-branch
 
 public class MainActivity extends AppCompatActivity {
     public static final String BASE_URL = "http://api.fixer.io";
@@ -59,10 +55,6 @@ public class MainActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
 
-<<<<<<< HEAD
-        Intent i = new Intent(this, HomeActivity.class);
-        startActivity(i);
-=======
         mFacebookLoginButton = (LoginButton) findViewById(R.id.login_with_facebook);
         mFacebookLoginButton.setReadPermissions("email");
         mFacebookCallbackManager = CallbackManager.Factory.create();
@@ -112,8 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 // ...
             }
         };
-
->>>>>>> origin/merge-branch
     }
 
     @Override

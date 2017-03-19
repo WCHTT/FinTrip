@@ -32,7 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     public static final int  MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
     ItemAdapter itemAdapter;
-    RecyclerView rvRequest;
+    RecyclerView rvToBuyItem;
     FloatingActionButton fabCreate;
     List<Item> items;
 
@@ -62,18 +62,27 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupView() {
 
-        rvRequest = (RecyclerView) findViewById(R.id.rvRequest);
+        rvToBuyItem = (RecyclerView) findViewById(R.id.rvRequest);
         // Initialize contacts
         items = new ArrayList<>();
 //        items = Item.createItemList(1);
         // Create adapter passing in the sample user data
         itemAdapter = new ItemAdapter(this,items);
         // Attach the adapter to the recyclerview to populate items
-        rvRequest.setAdapter(itemAdapter);
+        rvToBuyItem.setAdapter(itemAdapter);
         // Set layout manager to position the items
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rvRequest.setLayoutManager(linearLayoutManager);
-        rvRequest.setHasFixedSize(true);
+        rvToBuyItem.setLayoutManager(linearLayoutManager);
+        rvToBuyItem.setHasFixedSize(true);
+
+        ItemClickSupport.addTo(rvToBuyItem).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                // do it
+                Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+                startActivity(i);
+            }
+        });
 
     }
 
