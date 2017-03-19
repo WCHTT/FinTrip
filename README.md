@@ -1,3 +1,4 @@
+testing
 # Group Project - FinTrip
 
 FinTrip is an android app that allows a user to record to-buy item before and during his/her trip. After trip, FinTrip can help the user to charge the bill.
