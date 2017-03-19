@@ -1,38 +1,41 @@
 package com.irene.fintrip.models;
 
 import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Irene on 2017/3/18.
+ * Created by Irene on 2017/3/19.
  */
 
-@IgnoreExtraProperties
-public class BuyList {
-    private String uid;
-    private String authorId;
-    private String authorName;
+public class User {
 
-    public BuyList() {
+    private String uid;
+    private String name;
+    private String email;
+    private String photoUrl;
+
+    public User() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public BuyList(String uid, String authorId, String authorName) {
+    public User(String uid, String name, String email, String photoUrl) {
         this.uid = uid;
-        this.authorId = authorId;
-        this.authorName = authorName;
+        this.name = name;
+        this.email = email;
+        this.photoUrl = photoUrl;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid", uid);
-        result.put("authorId", authorId);
-        result.put("authorName", authorName);
+        result.put("name", name);
+        result.put("email", email);
+        result.put("photoUrl",photoUrl);
 
         return result;
     }
+
 }
