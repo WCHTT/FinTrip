@@ -4,6 +4,7 @@ import com.irene.fintrip.model.CurrencyExchange;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Created by reneewu on 3/17/2017.
@@ -11,6 +12,6 @@ import retrofit2.http.GET;
 
 public interface FixerAPIEndpointInterface {
     @GET("latest")
-    Call<CurrencyExchange> getLatest();
+    Call<CurrencyExchange> getLatest(@Query("base") String base);
 
 }

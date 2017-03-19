@@ -1,5 +1,8 @@
 package com.irene.fintrip.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,8 +11,14 @@ import java.util.Map;
  */
 
 public class CurrencyExchange {
+    @SerializedName("base")
+    @Expose
     private String base;
+    @SerializedName("date")
+    @Expose
     private String date;
+    @SerializedName("rates")
+    @Expose
     private Rates rates;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 

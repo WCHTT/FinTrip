@@ -1,5 +1,8 @@
 package com.irene.fintrip.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,37 +12,99 @@ import java.util.Map;
 
 public class Rates {
 
+    @SerializedName("AUD")
+    @Expose
     private Double aUD;
+    @SerializedName("BGN")
+    @Expose
     private Double bGN;
+    @SerializedName("BRL")
+    @Expose
     private Double bRL;
+    @SerializedName("CAD")
+    @Expose
     private Double cAD;
+    @SerializedName("CHF")
+    @Expose
     private Double cHF;
+    @SerializedName("CNY")
+    @Expose
     private Double cNY;
+    @SerializedName("CZK")
+    @Expose
     private Double cZK;
+    @SerializedName("DKK")
+    @Expose
     private Double dKK;
+    @SerializedName("GBP")
+    @Expose
     private Double gBP;
+    @SerializedName("HKD")
+    @Expose
     private Double hKD;
+    @SerializedName("HRK")
+    @Expose
     private Double hRK;
+    @SerializedName("HUF")
+    @Expose
     private Double hUF;
+    @SerializedName("IDR")
+    @Expose
     private Integer iDR;
+    @SerializedName("ILS")
+    @Expose
     private Double iLS;
+    @SerializedName("INR")
+    @Expose
     private Double iNR;
+    @SerializedName("JPY")
+    @Expose
     private Double jPY;
+    @SerializedName("KRW")
+    @Expose
     private Double kRW;
+    @SerializedName("MXN")
+    @Expose
     private Double mXN;
+    @SerializedName("MYR")
+    @Expose
     private Double mYR;
+    @SerializedName("NOK")
+    @Expose
     private Double nOK;
+    @SerializedName("NZD")
+    @Expose
     private Double nZD;
+    @SerializedName("PHP")
+    @Expose
     private Double pHP;
+    @SerializedName("PLN")
+    @Expose
     private Double pLN;
+    @SerializedName("RON")
+    @Expose
     private Double rON;
+    @SerializedName("RUB")
+    @Expose
     private Double rUB;
+    @SerializedName("SEK")
+    @Expose
     private Double sEK;
+    @SerializedName("SGD")
+    @Expose
     private Double sGD;
+    @SerializedName("THB")
+    @Expose
     private Double tHB;
+    @SerializedName("TRY")
+    @Expose
     private Double tRY;
-    private Double uSD;
+    @SerializedName("ZAR")
+    @Expose
     private Double zAR;
+    @SerializedName("EUR")
+    @Expose
+    private Double eUR;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public Double getAUD() {
@@ -274,6 +339,7 @@ public class Rates {
         this.tRY = tRY;
     }
 
+    /*
     public Double getUSD() {
         return uSD;
     }
@@ -281,7 +347,7 @@ public class Rates {
     public void setUSD(Double uSD) {
         this.uSD = uSD;
     }
-
+    */
     public Double getZAR() {
         return zAR;
     }
@@ -296,6 +362,20 @@ public class Rates {
 
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    // TODO: 3/19/2017
+    public Double get(String currency){
+        switch (currency){
+            case "JPY":
+                return getJPY();
+            case "KRW":
+                return getKRW();
+            case "CNY":
+                return getCNY();
+            default:
+                return getJPY();
+        }
     }
 
 }
