@@ -2,8 +2,9 @@ package com.irene.fintrip;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,8 +30,8 @@ import com.irene.fintrip.models.User;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class MainActivity extends AppCompatActivity {
+    public static final String BASE_URL = "http://api.fixer.io";
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -105,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
     }
 
     @Override
@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
     //need to do with user node in database
     private void writeNewUser(String uid, String displayName,String email, String photoUrl) {
         User user = new User(uid, displayName,email, photoUrl);
@@ -165,6 +164,5 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabase.updateChildren(childUpdates);
     }
-
 
 }
