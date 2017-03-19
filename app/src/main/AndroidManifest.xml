@@ -24,15 +24,20 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".MainActivity">
+
+        </activity>
+
+        <activity android:name=".DetailsActivity">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <activity android:name=".DetailsActivity"></activity>
-        <activity android:name=".BuylistActivity"></activity>
+        </activity>
+        <!--<activity android:name=".BuylistActivity"></activity>-->
         <activity android:name=".TripListActivity"></activity>
     </application>
 
