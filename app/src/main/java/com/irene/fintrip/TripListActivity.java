@@ -1,8 +1,11 @@
 package com.irene.fintrip;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +50,18 @@ public class TripListActivity extends AppCompatActivity {
         tripsAdapter = new TripListAdapter(this, allTrips);
         lvTrips.setAdapter(tripsAdapter);
 
+        lvTrips.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
+                        Intent i = new Intent(TripListActivity.this, DetailsActivity.class);
+                        startActivity(i);
+                    }
+                }
+        );//detail
+
     }
+
 
     private void writeNewBuyList(String authorId, String authorName, String createdTime, String listName) {
         // Create new item at /user-buylists/$userid/$buylistid and at
