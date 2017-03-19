@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BuylistActivity"></activity>
+        <activity android:name=".TripListActivity"></activity>
     </application>
 
 </manifest>

@@ -22,12 +22,19 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.irene.fintrip.models.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
 
     /* *************************************
@@ -54,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize the FirebaseAuth instance and the AuthStateListener method so you can track whenever the user signs in or out.
         mAuth = FirebaseAuth.getInstance();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Callback registration
         mFacebookLoginButton.registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
@@ -86,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getDisplayName());
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getPhotoUrl());
 
-                    Intent i = new Intent(getApplicationContext(),BuylistActivity.class);
+                    Intent i = new Intent(getApplicationContext(),TripListActivity.class);
                     startActivity(i);
                 } else {
                     // User is signed out
@@ -110,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
+            //FirebaseAuth.getInstance().signOut();
         }
     }
 
@@ -139,10 +149,21 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-
                         // ...
                     }
                 });
+    }
+
+    //need to do with user node in database
+    private void writeNewUser(String uid, String displayName,String email, String photoUrl) {
+        User user = new User(uid, displayName,email, photoUrl);
+        Map<String, Object> userMap = user.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+//        childUpdates.put("/buylists/" + key, postValues);
+        childUpdates.put("/users/"+uid, userMap);
+
+        mDatabase.updateChildren(childUpdates);
     }
 
 
