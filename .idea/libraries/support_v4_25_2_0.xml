@@ -1,8 +1,13 @@
 <component name="libraryTable">
   <library name="support-v4-25.2.0">
     <CLASSES>
+<<<<<<< HEAD
       <root url="jar://$USER_HOME$/.android/build-cache/b1456ab6ae995208c092a7182941c86eb7f870e5/output/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.android/build-cache/b1456ab6ae995208c092a7182941c86eb7f870e5/output/res" />
+=======
+      <root url="jar://$USER_HOME$/.android/build-cache/d1bb1a71c9d85af09a4fb3938cdc68d45645e8a3/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/d1bb1a71c9d85af09a4fb3938cdc68d45645e8a3/output/res" />
+>>>>>>> refs/remotes/origin/merge-branch
     </CLASSES>
     <JAVADOC />
     <SOURCES />

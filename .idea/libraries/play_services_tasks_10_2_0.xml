@@ -1,8 +1,13 @@
 <component name="libraryTable">
   <library name="play-services-tasks-10.2.0">
     <CLASSES>
+<<<<<<< HEAD
       <root url="jar://$USER_HOME$/.android/build-cache/4337bd696a65afa7cdc0b30d121f41cea4114e48/output/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.android/build-cache/4337bd696a65afa7cdc0b30d121f41cea4114e48/output/res" />
+=======
+      <root url="file://$USER_HOME$/.android/build-cache/2c3054cea722083e0b5448a3d3556bcbacb3071a/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/2c3054cea722083e0b5448a3d3556bcbacb3071a/output/jars/classes.jar!/" />
+>>>>>>> refs/remotes/origin/merge-branch
     </CLASSES>
     <JAVADOC />
     <SOURCES />
