@@ -4,16 +4,19 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
 import java.io.ByteArrayOutputStream;
@@ -27,9 +30,13 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity {
 
     String mCurrentPhotoPath;
+    File photoFile;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final int REQUEST_IMAGE_CAPTURE = 3;
+    public static final int SELECT_PICTURE = 1;
+    public static final int REQUEST_TAKE_PHOTO = 2;
     public static final int  MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    public final static int PICK_PHOTO_CODE = 1046;
 
     ItemAdapter itemAdapter;
     RecyclerView rvToBuyItem;
@@ -51,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
             } else {
 
                 ActivityCompat.requestPermissions(HomeActivity.this,
-                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE},
+                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         }
@@ -114,19 +121,70 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void dispatchTakePictureIntent() {
 
+        Intent pickIntent = new Intent();
+        pickIntent.setType("image/*");
+        pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.d("CameraTest",ex.toString());
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.irene.fintrip.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            }
+        }
+
+        String pickTitle = "Select or take a new Picture"; // Or get from strings.xml
+        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+        chooserIntent.putExtra
+                (
+                        Intent.EXTRA_INITIAL_INTENTS,
+                        new Intent[] { takePictureIntent }
+                );
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(chooserIntent, SELECT_PICTURE);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
 
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            Bitmap imageBitmap = null;
+            try {
+
+                if(data.getData() != null){
+//                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
+//                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+//                imageBitmap = decoder.decodeRegion(new Rect(10, 10, 50, 50), null);
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                }
+                else{
+                    Uri photoURI = FileProvider.getUriForFile(this,
+                            "com.irene.fintrip.fileprovider", photoFile);
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            Bundle extras = data.getExtras();
+//            imageBitmap = (Bitmap) extras.get("data");
 
             Item item = new Item(true,BitMapToString(imageBitmap),"chao","10000");
             items.add(0,item);

@@ -52,6 +52,16 @@
         <activity android:name=".DetailsActivity"></activity>
         <activity android:name=".TripListActivity"></activity>
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.irene.fintrip.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>
