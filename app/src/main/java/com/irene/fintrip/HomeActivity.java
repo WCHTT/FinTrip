@@ -167,30 +167,43 @@ public class HomeActivity extends AppCompatActivity {
             Bitmap imageBitmap = null;
             try {
 
+<<<<<<< HEAD
                 if(data != null && data.getData() != null){
+=======
+                if (data.getData() != null) {
+>>>>>>> merge-branch
 //                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
 //                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
 //                imageBitmap = decoder.decodeRegion(new Rect(10, 10, 50, 50), null);
                     imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
-                }
-                else{
+                } else {
                     Uri photoURI = FileProvider.getUriForFile(this,
                             "com.irene.fintrip.fileprovider", photoFile);
                     imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
 
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-//            Bundle extras = data.getExtras();
-//            imageBitmap = (Bitmap) extras.get("data");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+                Item item = new Item(true, BitMapToString(imageBitmap), "chao", "10000");
+
+<<<<<<< HEAD
             Item item = new Item(true,BitMapToString(imageBitmap),"","");
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
+=======
+                items.add(0, item);
+                itemAdapter.notifyItemInserted(0);
+>>>>>>> merge-branch
         }
     }
+
+
+//            Bundle extras = data.getExtras();
+//            imageBitmap = (Bitmap) extras.get("data");
+
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream baos=new  ByteArrayOutputStream();
