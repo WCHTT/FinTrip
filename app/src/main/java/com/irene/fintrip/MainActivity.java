@@ -2,9 +2,8 @@ package com.irene.fintrip;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getDisplayName());
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getPhotoUrl());
 
-                    Intent i = new Intent(getApplicationContext(),TripListActivity.class);
+                    Intent i = new Intent(MainActivity.this,TripListActivity.class);
                     startActivity(i);
                 } else {
                     // User is signed out
