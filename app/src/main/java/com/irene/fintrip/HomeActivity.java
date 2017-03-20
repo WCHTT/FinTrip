@@ -167,7 +167,7 @@ public class HomeActivity extends AppCompatActivity {
             Bitmap imageBitmap = null;
             try {
 
-                if(data.getData() != null){
+                if(data != null && data.getData() != null){
 //                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
 //                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
 //                imageBitmap = decoder.decodeRegion(new Rect(10, 10, 50, 50), null);
@@ -186,7 +186,7 @@ public class HomeActivity extends AppCompatActivity {
 //            Bundle extras = data.getExtras();
 //            imageBitmap = (Bitmap) extras.get("data");
 
-            Item item = new Item(true,BitMapToString(imageBitmap),"chao","10000");
+            Item item = new Item(true,BitMapToString(imageBitmap),"","");
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
