@@ -68,11 +68,11 @@ public class TripListActivity extends AppCompatActivity {
         // /buylists/$buylistid simultaneously
         String key = mDatabase.child("buylists").push().getKey();
         Trip trip = new Trip(key, authorId, authorName, createdTime, listName);
-        Map<String, Object> postValues = trip.toMap();
+        Map<String, Object> tripValues = trip.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
 //        childUpdates.put("/buylists/" + key, postValues);
-        childUpdates.put("/user-buylists/" + authorId + "/" + key, postValues);
+        childUpdates.put("/user-buylists/" + authorId + "/" + key, tripValues);
 
         mDatabase.updateChildren(childUpdates);
     }
