@@ -4,8 +4,13 @@
       <root url="jar://$USER_HOME$/.android/build-cache/fe63ca111d73c964af5bdda13272940e54d28c0a/output/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
+<<<<<<< HEAD
+      <root url="jar://$USER_HOME$/.android/build-cache/438316888e9204dbce37ec9dac96ced2a90a7115/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/438316888e9204dbce37ec9dac96ced2a90a7115/output/res" />
+=======
       <root url="file://$USER_HOME$/.android/build-cache/8697a0dd30f8e8335bde63c58f08785204ea4d20/output/res" />
       <root url="jar://$USER_HOME$/.android/build-cache/8697a0dd30f8e8335bde63c58f08785204ea4d20/output/jars/classes.jar!/" />
+>>>>>>> refs/remotes/origin/merge-branch
     </CLASSES>
     <JAVADOC />
     <SOURCES>
