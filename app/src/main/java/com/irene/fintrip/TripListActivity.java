@@ -58,7 +58,7 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
         user = FirebaseAuth.getInstance().getCurrentUser();
 //        writeNewBuyList(user.getUid(), "Irene", sdf.format(new Date()),"America");
         allTrips = new ArrayList<Trip>();
-        getNewBuyList(user.getUid());
+        getNewBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1");
 //        deleteBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1","-KfggbFdKY_Ll2vF7vRp");
 
 
