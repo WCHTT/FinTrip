@@ -2,10 +2,12 @@ package com.irene.fintrip;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -19,21 +21,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.irene.fintrip.adapters.TripListAdapter;
+import com.irene.fintrip.fragment.TripItemFragment;
 import com.irene.fintrip.models.Trip;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class TripListActivity extends AppCompatActivity {
+public class TripListActivity extends AppCompatActivity implements TripItemFragment.TripItemDialogListener{
     private DatabaseReference mDatabase;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
     private ArrayList<Trip> allTrips;
     private TripListAdapter tripsAdapter;
-    ListView lvTrips;
+
+    private FirebaseUser user;
+
+    private ListView lvTrips;
 
 
 
@@ -48,7 +55,7 @@ public class TripListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 //        writeNewBuyList(user.getUid(), "Irene", sdf.format(new Date()),"America");
         allTrips = new ArrayList<Trip>();
         getNewBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1");
@@ -70,6 +77,15 @@ public class TripListActivity extends AppCompatActivity {
                     }
                 }
         );//Home
+        lvTrips.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos,long id) {
+                        deleteBuyList(allTrips.get(pos).getAuthorId(), allTrips.get(pos).getBuyListId());
+                        return true;
+                    }
+                }
+        );
 
     }
 
@@ -78,6 +94,27 @@ public class TripListActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_trips, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.miTrip) {
+            openTripFragment(null);
+        }
+//        else if (id==R.id.action_other)
+//        {
+//            Toast toast=Toast.makeText(this, "Other Clicked.", Toast.LENGTH_LONG);
+//            toast.show();
+//        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void openTripFragment(Trip trip) {
+        FragmentManager fm = getSupportFragmentManager();
+        TripItemFragment tripitemDialogFragment = TripItemFragment.newInstance(trip);
+        tripitemDialogFragment.show(fm, "fragment_trip_item");
     }
 
     //write
@@ -104,6 +141,7 @@ public class TripListActivity extends AppCompatActivity {
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                allTrips.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
                     Map<String, String> tripValues = (Map<String, String>) postSnapshot.getValue();
@@ -139,6 +177,14 @@ public class TripListActivity extends AppCompatActivity {
     //delete
     private void deleteBuyList(String authorId, String tripId) {
         mDatabase.child("user-buylists").child(authorId).child(tripId).removeValue();
+    }
+
+    @Override
+    public void onFinishEditDialog(Trip trip, String condition) {
+        Log.e("DEBUG",condition+","+trip.getListName());
+        if(condition.equals("new")) {
+            writeNewBuyList(user.getUid(), user.getDisplayName(), sdf.format(new Date()),trip.getListName());
+        }
     }
 
 }
