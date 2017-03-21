@@ -1,9 +1,12 @@
 package com.irene.fintrip;
 
+import org.parceler.Parcel;
+
 /**
  * Created by ChaoJung on 2017/3/20.
  */
 
+@Parcel
 public class Item {
 
     public Item() {

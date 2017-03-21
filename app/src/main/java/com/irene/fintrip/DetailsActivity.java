@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private TextView etPrice;
     private TextView tvLocation;
     private TextView priceCurrency;
+    private ImageView ivItemImage;
 
     private String baseCurrency;
     private Double itemPrice;
@@ -109,9 +111,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         tvTargetPrice = (TextView) findViewById(R.id.tPrice);
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
-        
+        ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
+
         // TODO: Load data from DB for this item
         itemPrice = 100.0;
+        //Item item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
+
+        //ivItemImage.setImageBitmap(ImageUtils.StringToBitMap(item.getImageUrl()));
 
         // TODO: Load item's picture
 

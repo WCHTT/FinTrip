@@ -85,6 +85,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 // do it
                 Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+                //i.putExtra("item", Parcels.wrap(items.get(position)));
                 startActivity(i);
             }
         });
