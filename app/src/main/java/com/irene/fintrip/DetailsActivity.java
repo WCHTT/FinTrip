@@ -136,12 +136,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         }
 
         // optional
-        if(item.getOwner()!=null)
+        if(item.getOwner()!="")
             owner.setText(item.getOwner());
         else
             owner.setVisibility(View.GONE);
 
-        if(item.getPrice()!=null){
+        /*
+        if(item.getPrice()!=""){
             itemPrice = Double.parseDouble(item.getPrice());
             etPrice.setText(item.getPrice());
         }
@@ -153,7 +154,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             detailsPic.setVisibility(View.GONE);
             rlTargetPrice.setVisibility(View.GONE);
             rlTargetCurrency.setVisibility(View.GONE);
-        }
+        }*/
 
         // TODO: show target currency options if price is input
         // use USD as default price currency first
