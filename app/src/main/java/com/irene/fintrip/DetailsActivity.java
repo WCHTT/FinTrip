@@ -21,14 +21,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.irene.fintrip.API.FixerAPIEndpointInterface;
 import com.irene.fintrip.fragment.EditItemFragment;
 import com.irene.fintrip.model.CurrencyExchange;
 import com.irene.fintrip.model.Rates;
+
+import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.Currency;
@@ -112,14 +116,45 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
         ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
+        ImageView locationMark  = (ImageView) findViewById(R.id.locationMark);
+        ImageView detailsPic  = (ImageView) findViewById(R.id.detailsPic);
+        RelativeLayout rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
+        RelativeLayout rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
 
         // TODO: Load data from DB for this item
-        itemPrice = 100.0;
-        //Item item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
 
-        //ivItemImage.setImageBitmap(ImageUtils.StringToBitMap(item.getImageUrl()));
+        Item item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
 
-        // TODO: Load item's picture
+        // Required item
+        if(item.getImageUrl()!=""){
+            Glide.with(getBaseContext())
+                    .load(item.getImageUrl())
+                    //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
+                    .centerCrop()
+                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(ivItemImage);
+        }
+
+        // optional
+        if(item.getOwner()!="")
+            owner.setText(item.getOwner());
+        else
+            owner.setVisibility(View.GONE);
+
+        /*
+        if(item.getPrice()!=""){
+            itemPrice = Double.parseDouble(item.getPrice());
+            etPrice.setText(item.getPrice());
+        }
+        else{
+            // hide price editText, location and section below
+            etPrice.setVisibility(View.GONE);
+            tvLocation.setVisibility(View.GONE);
+            locationMark.setVisibility(View.GONE);
+            detailsPic.setVisibility(View.GONE);
+            rlTargetPrice.setVisibility(View.GONE);
+            rlTargetCurrency.setVisibility(View.GONE);
+        }*/
 
         // TODO: show target currency options if price is input
         // use USD as default price currency first
@@ -309,5 +344,16 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         itemPrice = Double.parseDouble(price);
 
         updateForCurrentLocation();
+
+        //TODO: update view
+
+        etPrice.setVisibility(View.VISIBLE);
+        tvLocation.setVisibility(View.VISIBLE);
+        //locationMark.setVisibility(View.GONE);
+        //detailsPic.setVisibility(View.GONE);
+        //rlTargetPrice.setVisibility(View.GONE);
+        //rlTargetCurrency.setVisibility(View.GONE);
+
+        owner.setVisibility(View.VISIBLE);
     }
 }
