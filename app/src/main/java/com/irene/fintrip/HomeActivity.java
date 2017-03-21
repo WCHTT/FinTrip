@@ -14,8 +14,10 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +30,6 @@ public class HomeActivity extends AppCompatActivity {
 
     String mCurrentPhotoPath;
     File photoFile;
-
 
     public static final int REQUEST_IMAGE_CAPTURE = 3;
     public static final int SELECT_PICTURE = 1;
@@ -45,6 +46,15 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.homeToolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
+
+        TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
+        Bundle extras = getIntent().getExtras();
+        tvToolbar.setText("- "+extras.getString("tripName"));
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
@@ -181,7 +191,7 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Item item = new Item(true,imageURI.toString(),"","");
+            Item item = new Item(true,imageURI.toString(),"@chao","$10,000");
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
