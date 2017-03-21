@@ -3,7 +3,6 @@ package com.irene.fintrip;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,11 +14,9 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -31,6 +28,7 @@ public class HomeActivity extends AppCompatActivity {
 
     String mCurrentPhotoPath;
     File photoFile;
+
 
     public static final int REQUEST_IMAGE_CAPTURE = 3;
     public static final int SELECT_PICTURE = 1;
@@ -119,6 +117,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void galleryAddPic(Uri contentUri) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
     private void dispatchTakePictureIntent() {
 
         Intent pickIntent = new Intent();
@@ -128,6 +133,14 @@ public class HomeActivity extends AppCompatActivity {
 //        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        String pickTitle = "Select or take a new Picture"; // Or get from strings.xml
+        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+        chooserIntent.putExtra
+                (
+                        Intent.EXTRA_INITIAL_INTENTS,
+                        new Intent[] { takePictureIntent }
+                );
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
@@ -139,23 +152,14 @@ public class HomeActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
+
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "com.irene.fintrip.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             }
         }
+        startActivityForResult(chooserIntent, SELECT_PICTURE);
 
-        String pickTitle = "Select or take a new Picture"; // Or get from strings.xml
-        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
-        chooserIntent.putExtra
-                (
-                        Intent.EXTRA_INITIAL_INTENTS,
-                        new Intent[] { takePictureIntent }
-                );
-
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(chooserIntent, SELECT_PICTURE);
-        }
     }
 
     @Override
@@ -164,50 +168,39 @@ public class HomeActivity extends AppCompatActivity {
 //        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
 
-            Bitmap imageBitmap = null;
+            Uri imageURI = null;
             try {
 
-                if (data.getData() != null) {
-//                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
-//                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
-//                imageBitmap = decoder.decodeRegion(new Rect(10, 10, 50, 50), null);
-                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                if(data != null && data.getData() != null){
+                    imageURI = data.getData();
                 } else {
-                    Uri photoURI = FileProvider.getUriForFile(this,
-                            "com.irene.fintrip.fileprovider", photoFile);
-                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
 
+                    File f = new File(mCurrentPhotoPath);
+                    imageURI = Uri.fromFile(f);
+                    galleryAddPic(imageURI);
                 }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-                Item item = new Item(true, BitMapToString(imageBitmap), "chao", "10000");
-
-                items.add(0, item);
-                itemAdapter.notifyItemInserted(0);
+            Item item = new Item(true,imageURI.toString(),"","");
+            items.add(0,item);
+            itemAdapter.notifyItemInserted(0);
         }
-    }
-
-
-//            Bundle extras = data.getExtras();
-//            imageBitmap = (Bitmap) extras.get("data");
-
-
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        String temp= Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
     }
 
     private File createImageFile() throws IOException {
         // Create an image file name
+        final String appDirectoryName = "FinTrip";
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),appDirectoryName);
+        if (!storageDir.exists()){
+            if (!storageDir.mkdirs()){
+                Log.d("CameraTest", "failed to create directory");
+            }
+        }
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
