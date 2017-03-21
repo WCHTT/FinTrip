@@ -1,15 +1,15 @@
 package com.irene.fintrip;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -96,7 +96,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         ImageView ivStar = viewHolder.ivStar;
 
         ImageView ivProduct = viewHolder.ivProduct;
-        ivProduct.setImageBitmap(StringToBitMap(item.getImageUrl()));
+        Glide.with(mContext)
+                .load(item.getImageUrl()) // Uri of the picture
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivProduct);
 
         TextView tvOwner = viewHolder.tvOwner;
         tvOwner.setText(item.getOwner());
@@ -112,15 +116,5 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         return mItem.size();
     }
 
-    public Bitmap StringToBitMap(String encodedString){
-        try {
-            byte [] encodeByte= Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch(Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
 
 }

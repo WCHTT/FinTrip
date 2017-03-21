@@ -3,7 +3,9 @@ package com.irene.fintrip;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -39,12 +41,20 @@ public class TripListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_triplist);
-        //writeNewBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1", "Irene", sdf.format(new Date()),"Okinawa");
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tripToolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Log.e("DEBUG", user.getDisplayName());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        writeNewBuyList(user.getUid(), "Irene", sdf.format(new Date()),"America");
         allTrips = new ArrayList<Trip>();
-        getNewBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1");
+        getNewBuyList(user.getUid());
+//        deleteBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1","-KfggbFdKY_Ll2vF7vRp");
+
+
 
         lvTrips = (ListView) findViewById(R.id.lvTrips);
         tripsAdapter = new TripListAdapter(this, allTrips);
@@ -62,21 +72,29 @@ public class TripListActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_trips, menu);
+        return true;
+    }
 
+    //write
     private void writeNewBuyList(String authorId, String authorName, String createdTime, String listName) {
         // Create new item at /user-buylists/$userid/$buylistid and at
-        // /buylists/$buylistid simultaneously
-        String key = mDatabase.child("buylists").push().getKey();
+        String key = mDatabase.child("user-buylists").child(authorId).push().getKey();
         Trip trip = new Trip(key, authorId, authorName, createdTime, listName);
-        Map<String, Object> postValues = trip.toMap();
+
+        Map<String, Object> tripValues = trip.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
 //        childUpdates.put("/buylists/" + key, postValues);
-        childUpdates.put("/user-buylists/" + authorId + "/" + key, postValues);
+        childUpdates.put("/user-buylists/" + authorId + "/" + key, tripValues);
 
         mDatabase.updateChildren(childUpdates);
     }
 
+    //read
     private void getNewBuyList(String authorId) {
 
         //final ArrayList<Trip> trips = new ArrayList<Trip>();
@@ -87,12 +105,16 @@ public class TripListActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
-                    Map<String, String> postValues = (Map<String, String>) postSnapshot.getValue();
-                    Trip trip = new Trip(postValues.get("buyListId"),postValues.get("authorId"),postValues.get("authorName"),postValues.get("createdTime"), postValues.get("listName"));
+                    Map<String, String> tripValues = (Map<String, String>) postSnapshot.getValue();
+                    Trip trip = new Trip(tripValues.get("buyListId"),tripValues.get("authorId"),tripValues.get("authorName"),tripValues.get("createdTime"), tripValues.get("listName"));
                     Log.e("DEBUG", String.valueOf(trip.getAuthorId()));
                     allTrips.add(trip);
-                    tripsAdapter.notifyDataSetChanged();
+
+//                    allTrips.get(0).setListName("America");
+//
+//                    modifyBuyList("pB57jmHfCAhDy5lSpdW6mOWMOFg1","-Kf_zIeT765Znw4D8TBu",allTrips.get(0));
                 }
+                tripsAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -104,12 +126,18 @@ public class TripListActivity extends AppCompatActivity {
         });
     }
 
-    private void modifyBuyList() {
+    //update
+    private void modifyBuyList(String authorId, String tripId, Trip modifyTrip) {
+        Map<String, Object> tripValues = modifyTrip.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/user-buylists/" + authorId + "/" + tripId, tripValues);
 
+        mDatabase.updateChildren(childUpdates);
     }
 
-    private void deleteBuyList() {
-
+    //delete
+    private void deleteBuyList(String authorId, String tripId) {
+        mDatabase.child("user-buylists").child(authorId).child(tripId).removeValue();
     }
 
 }
