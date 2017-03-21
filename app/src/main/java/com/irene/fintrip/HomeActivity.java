@@ -130,8 +130,6 @@ public class HomeActivity extends AppCompatActivity {
         pickIntent.setType("image/*");
         pickIntent.setAction(Intent.ACTION_GET_CONTENT);
 
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         String pickTitle = "Select or take a new Picture"; // Or get from strings.xml
@@ -159,7 +157,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         startActivityForResult(chooserIntent, SELECT_PICTURE);
-
     }
 
     @Override
@@ -169,13 +166,13 @@ public class HomeActivity extends AppCompatActivity {
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
 
             Uri imageURI = null;
+            File f = new File(mCurrentPhotoPath);
             try {
 
                 if(data != null && data.getData() != null){
+                    f.delete();
                     imageURI = data.getData();
                 } else {
-
-                    File f = new File(mCurrentPhotoPath);
                     imageURI = Uri.fromFile(f);
                     galleryAddPic(imageURI);
                 }
@@ -211,4 +208,5 @@ public class HomeActivity extends AppCompatActivity {
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
 }
