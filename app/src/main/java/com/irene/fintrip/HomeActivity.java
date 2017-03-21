@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -130,9 +131,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void galleryAddPic(Uri contentUri) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+        Intent mediaScanIntent = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        }
+        else {
+            mediaScanIntent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
+        }
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
+
     }
 
     private void dispatchTakePictureIntent() {
@@ -187,12 +196,13 @@ public class HomeActivity extends AppCompatActivity {
                     imageURI = Uri.fromFile(f);
                     galleryAddPic(imageURI);
                 }
+                Log.d("imageURI",imageURI.toString());
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            Item item = new Item(true,imageURI.toString(),"@chao","$10,000");
+            Item item = new Item(true,imageURI.toString(),"","");
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
