@@ -1,6 +1,7 @@
 package com.irene.fintrip;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +97,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         ImageView ivStar = viewHolder.ivStar;
 
         ImageView ivProduct = viewHolder.ivProduct;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivProduct.setClipToOutline(true);
+        }
+
         Glide.with(mContext)
                 .load(item.getImageUrl()) // Uri of the picture
                 .centerCrop()
