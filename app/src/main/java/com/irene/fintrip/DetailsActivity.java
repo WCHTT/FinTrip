@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +70,12 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        // Find the toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
+
         //if (!canAccessLocation() ) {
         //    requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         //}
@@ -102,15 +109,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         tvTargetPrice = (TextView) findViewById(R.id.tPrice);
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
-
-        //etPrice = (EditText) findViewById(R.id.price);
+        
+        // TODO: Load data from DB for this item
         itemPrice = 100.0;
-        // Load data from DB for this item
 
-        // Load item's picture
+        // TODO: Load item's picture
 
-
-        // show target currency options if price is input
+        // TODO: show target currency options if price is input
         // use USD as default price currency first
         baseCurrency = "USD";
 
@@ -128,7 +133,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 int statusCode = response.code();
                 rates = response.body().getRates();
 
-                // TODO: 3/19/2017
+                // TODO:get supported currency exchange rate for dropdown from api
                 //final String[] currency = {"JPY", "KRW", "CNY"};
                 //ArrayAdapter<String> currencyList = new ArrayAdapter<>(DetailsActivity.this,
                 //        android.R.layout.simple_spinner_dropdown_item,
@@ -138,8 +143,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(DetailsActivity.this, "你選的是" + currency[position], Toast.LENGTH_SHORT).show();
-
                         // update target price
                         Double tPrice = itemPrice * rates.get(currency[position]);
                         tvTargetPrice.setText(tPrice.toString());
@@ -194,6 +197,9 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private void updateForCurrentLocation() {
         final Location location = locationServiceInitial();
+        if(location==null)
+            return;
+
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
         // Helper.log(TAG, "latitude: " +latitude);
@@ -203,13 +209,30 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         try {
             addresses = gcd.getFromLocation(latitude, longitude, 1);
 
-            Locale locale = addresses.get(0).getLocale();
+            if(addresses.size()>0){
+                Locale locale = addresses.get(0).getLocale();
 
-            // update view
-            priceCurrency.setText(displayCurrencyInfoForLocale(locale));
-            tvLocation.setText(addresses.get(0).getLocality());
+                // update view
+                priceCurrency.setText(displayCurrencyInfoForLocale(locale));
+                tvLocation.setText(addresses.get(0).getLocality());
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkAccessLocationPermission(){
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+            // do nothing
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    TAG_CODE_PERMISSION_LOCATION);
         }
     }
 
@@ -275,26 +298,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
-        // TODO: update view
         owner.setText(ownerName);
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
 
-        // TODO: upload location
         updateForCurrentLocation();
-
-        /*Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
-        List<Address> addresses = gcd.getFromLocation(lat, lng, 1);
-        if (addresses.size() > 0)
-        {
-            System.out.println(addresses.get(0).getLocality());
-        }
-        else
-        {
-            // do your staff
-        }
-
-        // location.setText
-        priceCurrency.setText(getCurrencyForCurrentLocation());*/
     }
 }

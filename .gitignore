@@ -38,3 +38,13 @@ captures/
 
 # Keystore files
 *.jks
+.idea/libraries/firebase_analytics_10_2_0.xml
+.idea/libraries/firebase_analytics_impl_10_2_0.xml
+.idea/libraries/appcompat_v7_25_2_0.xml
+.idea/libraries/appcompat_v7_25_2_0.xml
+.idea/libraries/animated_vector_drawable_25_2_0.xml
+.idea/libraries/espresso_core_2_2_2.xml
+.idea/libraries/espresso_idling_resource_2_2_2.xml
+.idea/libraries/exposed_instrumentation_api_publish_0_5.xml
+.idea/libraries/facebook_android_sdk_4_14_0.xml
+.idea/libraries/firebase_analytics_10_2_0.xml
