@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getDisplayName());
                     Log.d("DEBUG", "onAuthStateChanged:signed_in:" + user.getPhotoUrl());
 
-                    Intent i = new Intent(getApplicationContext(),TripListActivity.class);
+                    Intent i = new Intent(MainActivity.this,TripListActivity.class);
                     startActivity(i);
                 } else {
                     // User is signed out
