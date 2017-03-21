@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import org.parceler.Parcels;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -85,6 +87,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 // do it
                 Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+                i.putExtra("item", Parcels.wrap(items.get(position)));
                 startActivity(i);
             }
         });
