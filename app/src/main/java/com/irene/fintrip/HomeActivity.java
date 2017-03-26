@@ -204,7 +204,7 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Item item = new Item(true,imageURI.toString(),"","");
+            Item item = new Item(true,imageURI.toString(),"",0.0);
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
