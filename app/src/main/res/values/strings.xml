@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FinTrip</string>
+    <string name="login_with_facebook">facebook login</string>
+    <string name="facebook_app_id">1663709960598824</string>
+    <string name="fb_login_protocol_scheme">1663709960598824</string>
+    <string name="new_trip">New Trip</string>
 </resources>
