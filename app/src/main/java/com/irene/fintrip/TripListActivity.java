@@ -72,6 +72,7 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
                     @Override
                     public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
                         Intent i = new Intent(TripListActivity.this, HomeActivity.class);
+                        i.putExtra("tripName",tripsAdapter.getItem(pos).getListName());
                         startActivity(i);
                     }
                 }

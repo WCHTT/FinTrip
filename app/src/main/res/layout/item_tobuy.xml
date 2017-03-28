@@ -4,15 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:padding="5dp"
+    android:background="@drawable/item_border">
 
     <ImageView
         android:id="@+id/ivStar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/ivProduct"
         android:src="@drawable/ic_star_border" />
 
     <ImageView
@@ -22,22 +26,31 @@
         android:layout_below="@+id/ivStar"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
-        app:srcCompat="@mipmap/ic_launcher" />
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:srcCompat="@mipmap/ic_launcher"
+        android:background="@drawable/image_border" />
 
     <TextView
         android:id="@+id/tvOwner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ivProduct"
         android:layout_below="@+id/ivProduct"
-        android:text="Default Owner" />
+        android:text="Default Owner"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tvPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/ivProduct"
         android:layout_below="@+id/ivProduct"
-        android:layout_alignParentRight="true"
-        android:text="Default Price" />
+        android:text="Default Price"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 
 

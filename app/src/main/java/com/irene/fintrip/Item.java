@@ -12,7 +12,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, String price) {
+    public Item(boolean isBuy, String imageUrl, String owner, Double price) {
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
@@ -31,7 +31,7 @@ public class Item {
         this.owner = owner;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -47,7 +47,7 @@ public class Item {
         return owner;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
@@ -55,5 +55,5 @@ public class Item {
     boolean isBuy;
     String imageUrl;
     String owner;
-    String price;
+    Double price;
 }

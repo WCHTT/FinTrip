@@ -58,6 +58,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private TextView priceCurrency;
     private ImageView ivItemImage;
 
+    private ImageView locationMark;
+    private ImageView detailsPic;
+    private RelativeLayout rlTargetCurrency;
+    private RelativeLayout rlTargetPrice;
     private String baseCurrency;
     private Double itemPrice;
     private LocationManager lms;
@@ -116,10 +120,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
         ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
-        ImageView locationMark  = (ImageView) findViewById(R.id.locationMark);
-        ImageView detailsPic  = (ImageView) findViewById(R.id.detailsPic);
-        RelativeLayout rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
-        RelativeLayout rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
+        locationMark  = (ImageView) findViewById(R.id.locationMark);
+        detailsPic  = (ImageView) findViewById(R.id.detailsPic);
+        rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
+        rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
 
         // TODO: Load data from DB for this item
 
@@ -141,20 +145,20 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         else
             owner.setVisibility(View.GONE);
 
-        /*
-        if(item.getPrice()!=""){
-            itemPrice = Double.parseDouble(item.getPrice());
-            etPrice.setText(item.getPrice());
+
+        if(item.getPrice()!=0.0){
+            itemPrice = item.getPrice();
+            etPrice.setText(item.getPrice().toString());
         }
         else{
             // hide price editText, location and section below
-            etPrice.setVisibility(View.GONE);
-            tvLocation.setVisibility(View.GONE);
-            locationMark.setVisibility(View.GONE);
-            detailsPic.setVisibility(View.GONE);
-            rlTargetPrice.setVisibility(View.GONE);
-            rlTargetCurrency.setVisibility(View.GONE);
-        }*/
+            etPrice.setVisibility(View.INVISIBLE);
+            tvLocation.setVisibility(View.INVISIBLE);
+            locationMark.setVisibility(View.INVISIBLE);
+            detailsPic.setVisibility(View.INVISIBLE);
+            rlTargetPrice.setVisibility(View.INVISIBLE);
+            rlTargetCurrency.setVisibility(View.INVISIBLE);
+        }
 
         // TODO: show target currency options if price is input
         // use USD as default price currency first
@@ -349,11 +353,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         etPrice.setVisibility(View.VISIBLE);
         tvLocation.setVisibility(View.VISIBLE);
-        //locationMark.setVisibility(View.GONE);
-        //detailsPic.setVisibility(View.GONE);
-        //rlTargetPrice.setVisibility(View.GONE);
-        //rlTargetCurrency.setVisibility(View.GONE);
-
+        locationMark.setVisibility(View.VISIBLE);
+        detailsPic.setVisibility(View.VISIBLE);
+        rlTargetPrice.setVisibility(View.VISIBLE);
+        rlTargetCurrency.setVisibility(View.VISIBLE);
         owner.setVisibility(View.VISIBLE);
     }
 }
