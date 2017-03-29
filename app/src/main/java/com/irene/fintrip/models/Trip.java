@@ -16,17 +16,19 @@ public class Trip {
     private String authorId;
     private String authorName;
     private String createdTime;
+    private Long createdTimeStampOrder;
     private String listName;
 
     public Trip() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public Trip(String buyListId, String authorId, String authorName, String createdTime, String listName) {
+    public Trip(String buyListId, String authorId, String authorName, String createdTime, Long createdTimeStampOrder, String listName) {
         this.buyListId = buyListId;
         this.authorId = authorId;
         this.authorName = authorName;
         this.createdTime = createdTime;
+        this.createdTimeStampOrder = createdTimeStampOrder;
         this.listName = listName;
     }
 
@@ -37,6 +39,7 @@ public class Trip {
         result.put("authorId", authorId);
         result.put("authorName", authorName);
         result.put("createdTime",createdTime);
+        result.put("createdTimeStampOrder", createdTimeStampOrder);
         result.put("listName", listName);
 
         return result;
@@ -72,6 +75,14 @@ public class Trip {
 
     public void setCreatedTime(String createdTime) {
         this.createdTime = createdTime;
+    }
+
+    public Long getCreatedTimeStampOrder() {
+        return createdTimeStampOrder;
+    }
+
+    public void setCreatedTimeStampOrder(Long createdTimeStampOrder) {
+        this.createdTimeStampOrder = createdTimeStampOrder;
     }
 
     public String getListName() {
