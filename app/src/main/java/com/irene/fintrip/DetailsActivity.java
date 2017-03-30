@@ -430,7 +430,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         owner.setText(ownerName);
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
-        
+
         Address address = updateForCurrentLocation();
 
         if(address!=null){

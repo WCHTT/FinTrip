@@ -74,13 +74,16 @@ public class Item {
     public String getTargetCurrency() {
         return targetCurrency;
     }
-    boolean isBuy;
-    String imageUrl;
-    String owner;
-    Double price;
-    String location;
-    String priceTagImageUrl;
-    String targetCurrency;
+
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public boolean isPaid() {
+
+        return isPaid;
+    }
 
     public String getPriceCurrency() {
         return priceCurrency;
@@ -90,7 +93,13 @@ public class Item {
         this.priceCurrency = priceCurrency;
     }
 
-    String priceCurrency;
-
-
+    boolean isBuy;
+    String imageUrl;
+    String owner;
+    Double price;
+    String location;
+    String priceTagImageUrl;
+    String targetCurrency;
+    String priceCurrency; /*local: travel location*/
+    boolean isPaid; /*is owner paid for this item or not*/
 }
