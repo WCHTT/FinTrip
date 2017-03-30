@@ -17,9 +17,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.irene.fintrip.Utils.DatabaseUtil;
 import com.irene.fintrip.adapters.TripListAdapter;
 import com.irene.fintrip.fragment.TripItemFragment;
 import com.irene.fintrip.models.Trip;
@@ -32,6 +32,7 @@ import java.util.Map;
 
 
 public class TripListActivity extends AppCompatActivity implements TripItemFragment.TripItemDialogListener{
+
     private DatabaseReference mDatabase;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
@@ -54,7 +55,9 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+        mDatabase = DatabaseUtil.getDatabase().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
 //        writeNewBuyList(user.getUid(), "Irene", sdf.format(new Date()),"America");
         allTrips = new ArrayList<Trip>();
