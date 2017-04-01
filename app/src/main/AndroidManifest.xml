@@ -50,16 +50,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity"></activity>
-<<<<<<< HEAD
+
         <activity android:name=".DetailsActivity">
 
         </activity>
         <activity android:name=".TripListActivity"
                 android:allowBackup="true"></activity>
-=======
-        <activity android:name=".DetailsActivity"></activity>
-        <activity android:name=".TripListActivity" />
->>>>>>> merge-branch
 
         <provider
             android:name="android.support.v4.content.FileProvider"
