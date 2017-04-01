@@ -35,6 +35,18 @@ public class Item {
         this.price = price;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setPriceTagImageUrl(String priceTagImageUrl) {
+        this.priceTagImageUrl = priceTagImageUrl;
+    }
+
+    public void setTargetCurrency(String targetCurrency) {
+        this.targetCurrency = targetCurrency;
+    }
+
     public boolean isBuy() {
         return isBuy;
     }
@@ -51,9 +63,43 @@ public class Item {
         return price;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public String getPriceTagImageUrl() {
+        return priceTagImageUrl;
+    }
+
+    public String getTargetCurrency() {
+        return targetCurrency;
+    }
+
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public boolean isPaid() {
+
+        return isPaid;
+    }
+
+    public String getPriceCurrency() {
+        return priceCurrency;
+    }
+
+    public void setPriceCurrency(String priceCurrency) {
+        this.priceCurrency = priceCurrency;
+    }
 
     boolean isBuy;
     String imageUrl;
     String owner;
     Double price;
+    String location;
+    String priceTagImageUrl;
+    String targetCurrency;
+    String priceCurrency; /*local: travel location*/
+    boolean isPaid; /*is owner paid for this item or not*/
 }
