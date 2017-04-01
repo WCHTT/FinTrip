@@ -24,7 +24,7 @@ public class Item {
         this.price = price;
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid) {
+    public Item(boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
@@ -34,6 +34,8 @@ public class Item {
         this.targetCurrency = targetCurrency;
         this.priceCurrency = priceCurrency;
         this.isPaid = isPaid;
+        this.createdTime = createdTime;
+        this.createdTimeStampOrder = createdTimeStampOrder;
     }
 
     @Exclude
@@ -48,6 +50,8 @@ public class Item {
         result.put("targetCurrency", targetCurrency);
         result.put("priceCurrency", priceCurrency);
         result.put("isPaid",isPaid);
+        result.put("createdTime",createdTime);
+        result.put("createdTimeStampOrder",createdTimeStampOrder);
 
         return result;
     }
@@ -126,6 +130,22 @@ public class Item {
         this.priceCurrency = priceCurrency;
     }
 
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Long getCreatedTimeStampOrder() {
+        return createdTimeStampOrder;
+    }
+
+    public void setCreatedTimeStampOrder(Long createdTimeStampOrder) {
+        this.createdTimeStampOrder = createdTimeStampOrder;
+    }
+
     boolean isBuy;
     String imageUrl;
     String owner;
@@ -135,4 +155,6 @@ public class Item {
     String targetCurrency;
     String priceCurrency; /*local: travel location*/
     boolean isPaid; /*is owner paid for this item or not*/
+    String createdTime;
+    Long createdTimeStampOrder;
 }
