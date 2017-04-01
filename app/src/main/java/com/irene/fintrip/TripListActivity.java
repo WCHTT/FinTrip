@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.irene.fintrip.Utils.DatabaseUtil;
@@ -76,6 +77,7 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
                     public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
                         Intent i = new Intent(TripListActivity.this, HomeActivity.class);
                         i.putExtra("tripName",tripsAdapter.getItem(pos).getListName());
+                        i.putExtra("tripId", tripsAdapter.getItem(pos).getBuyListId());
                         startActivity(i);
                     }
                 }

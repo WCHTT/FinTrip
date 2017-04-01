@@ -12,8 +12,8 @@ public class DatabaseUtil {
     private static FirebaseDatabase mDatabase;
 
     public static FirebaseDatabase getDatabase() {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (mDatabase == null) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             mDatabase = FirebaseDatabase.getInstance();
             //mDatabase.setPersistenceEnabled(true);
         }

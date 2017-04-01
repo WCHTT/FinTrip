@@ -1,6 +1,11 @@
 package com.irene.fintrip;
 
+import com.google.firebase.database.Exclude;
+
 import org.parceler.Parcel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ChaoJung on 2017/3/20.
@@ -17,6 +22,34 @@ public class Item {
         this.imageUrl = imageUrl;
         this.owner = owner;
         this.price = price;
+    }
+
+    public Item(boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid) {
+        this.isBuy = isBuy;
+        this.imageUrl = imageUrl;
+        this.owner = owner;
+        this.price = price;
+        this.location = location;
+        this.priceTagImageUrl = priceTagImageUrl;
+        this.targetCurrency = targetCurrency;
+        this.priceCurrency = priceCurrency;
+        this.isPaid = isPaid;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("isBuy", isBuy);
+        result.put("imageUrl", imageUrl);
+        result.put("owner", owner);
+        result.put("price",price);
+        result.put("location", location);
+        result.put("priceTagImageUrl", priceTagImageUrl);
+        result.put("targetCurrency", targetCurrency);
+        result.put("priceCurrency", priceCurrency);
+        result.put("isPaid",isPaid);
+
+        return result;
     }
 
     public void setBuy(boolean buy) {
