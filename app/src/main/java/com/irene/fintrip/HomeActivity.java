@@ -46,11 +46,14 @@ public class HomeActivity extends AppCompatActivity {
     public static final int REQUEST_TAKE_PHOTO = 2;
     public static final int  MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public final static int PICK_PHOTO_CODE = 1046;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+
 
     ItemAdapter itemAdapter;
     RecyclerView rvToBuyItem;
     FloatingActionButton fabCreate;
     List<Item> items;
+    String tripID;
 
     private DatabaseReference mDatabase;
 
@@ -69,6 +72,7 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
         Bundle extras = getIntent().getExtras();
         tvToolbar.setText("- "+extras.getString("tripName"));
+        tripID = extras.getString("tripId");
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
@@ -227,7 +231,10 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            Date createTime = new Date();
+
             Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            writeItemList(tripID,false,imageURI.toString(),"CHAO",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
