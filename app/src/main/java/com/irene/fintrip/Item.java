@@ -12,7 +12,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, String price) {
+    public Item(boolean isBuy, String imageUrl, String owner, Double price) {
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
@@ -31,8 +31,20 @@ public class Item {
         this.owner = owner;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setPriceTagImageUrl(String priceTagImageUrl) {
+        this.priceTagImageUrl = priceTagImageUrl;
+    }
+
+    public void setTargetCurrency(String targetCurrency) {
+        this.targetCurrency = targetCurrency;
     }
 
     public boolean isBuy() {
@@ -47,13 +59,47 @@ public class Item {
         return owner;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public String getPriceTagImageUrl() {
+        return priceTagImageUrl;
+    }
+
+    public String getTargetCurrency() {
+        return targetCurrency;
+    }
+
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public boolean isPaid() {
+
+        return isPaid;
+    }
+
+    public String getPriceCurrency() {
+        return priceCurrency;
+    }
+
+    public void setPriceCurrency(String priceCurrency) {
+        this.priceCurrency = priceCurrency;
+    }
 
     boolean isBuy;
     String imageUrl;
     String owner;
-    String price;
+    Double price;
+    String location;
+    String priceTagImageUrl;
+    String targetCurrency;
+    String priceCurrency; /*local: travel location*/
+    boolean isPaid; /*is owner paid for this item or not*/
 }

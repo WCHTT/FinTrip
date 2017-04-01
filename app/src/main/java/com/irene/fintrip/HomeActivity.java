@@ -17,6 +17,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -103,6 +105,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    public void onChargeAction(MenuItem mi) {
+        Intent i = new Intent(getApplicationContext(),ChargeActivity.class);
+        startActivity(i);
     }
 
     private void createItem() {
@@ -204,7 +218,7 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Item item = new Item(true,imageURI.toString(),"","");
+            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }

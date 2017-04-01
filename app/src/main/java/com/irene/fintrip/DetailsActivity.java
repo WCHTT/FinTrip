@@ -1,17 +1,22 @@
 package com.irene.fintrip;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,8 +39,11 @@ import com.irene.fintrip.model.Rates;
 
 import org.parceler.Parcels;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,20 +53,29 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
+import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
 
+public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
+    String mCurrentPhotoPath;
+    File photoFile;
     public static final String BASE_URL = "http://api.fixer.io";
     private Spinner spinner;
     private Rates rates;
     private TextView tvTargetPrice;
 
+    private Item item;
     private TextView owner;
     private TextView etPrice;
     private TextView tvLocation;
     private TextView priceCurrency;
     private ImageView ivItemImage;
 
+    private ImageView locationMark;
+    private ImageView detailsPic;
+    private RelativeLayout rlTargetCurrency;
+    private RelativeLayout rlTargetPrice;
     private String baseCurrency;
+    private String[] currency = {"JPY", "KRW", "CNY"};
     private Double itemPrice;
     private LocationManager lms;
     private String bestProvider = LocationManager.GPS_PROVIDER;
@@ -104,7 +121,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         spinner = (Spinner) findViewById(R.id.tCurrencySpinner);
 
-        final String[] currency = {"JPY", "KRW", "CNY"};
+
         ArrayAdapter<String> currencyList = new ArrayAdapter<>(DetailsActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
                 currency);
@@ -116,14 +133,14 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
         ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
-        ImageView locationMark  = (ImageView) findViewById(R.id.locationMark);
-        ImageView detailsPic  = (ImageView) findViewById(R.id.detailsPic);
-        RelativeLayout rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
-        RelativeLayout rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
+        locationMark  = (ImageView) findViewById(R.id.locationMark);
+        detailsPic  = (ImageView) findViewById(R.id.detailsPic);
+        rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
+        rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
 
         // TODO: Load data from DB for this item
 
-        Item item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
+        item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
 
         // Required item
         if(item.getImageUrl()!=""){
@@ -141,24 +158,44 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         else
             owner.setVisibility(View.GONE);
 
-        /*
-        if(item.getPrice()!=""){
-            itemPrice = Double.parseDouble(item.getPrice());
-            etPrice.setText(item.getPrice());
+
+        if(item.getPrice()!=0.0){
+            itemPrice = item.getPrice();
+            etPrice.setText(item.getPrice().toString());
         }
         else{
             // hide price editText, location and section below
-            etPrice.setVisibility(View.GONE);
-            tvLocation.setVisibility(View.GONE);
-            locationMark.setVisibility(View.GONE);
-            detailsPic.setVisibility(View.GONE);
-            rlTargetPrice.setVisibility(View.GONE);
-            rlTargetCurrency.setVisibility(View.GONE);
-        }*/
+            etPrice.setVisibility(View.INVISIBLE);
+            priceCurrency.setVisibility(View.INVISIBLE);
+            tvLocation.setVisibility(View.INVISIBLE);
+            locationMark.setVisibility(View.INVISIBLE);
+            rlTargetPrice.setVisibility(View.INVISIBLE);
+            rlTargetCurrency.setVisibility(View.INVISIBLE);
+        }
 
-        // TODO: show target currency options if price is input
-        // use USD as default price currency first
-        baseCurrency = "USD";
+        if(item.getPriceTagImageUrl()!="")
+        {
+            detailsPic.setVisibility(View.VISIBLE);
+            Glide.with(getBaseContext())
+                    .load(item.getPriceTagImageUrl())
+                    //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
+                    .centerCrop()
+                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(detailsPic);
+        }
+
+        ImageView priceTagImageCamera = (ImageView) findViewById(R.id.pic);
+        //
+        priceTagImageCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+
+    }
+
+    private void prepareCurrencyExchangeSection(String baseCurrency){
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -201,8 +238,63 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 // Log error here since request failed
             }
         });
+    }
 
+    private void dispatchTakePictureIntent() {
 
+        Intent pickIntent = new Intent();
+        pickIntent.setType("image/*");
+        pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        String pickTitle = "Select or take a new Picture"; // Or get from strings.xml
+        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+        chooserIntent.putExtra
+                (
+                        Intent.EXTRA_INITIAL_INTENTS,
+                        new Intent[] { takePictureIntent }
+                );
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.d("CameraTest",ex.toString());
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.irene.fintrip.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            }
+        }
+        startActivityForResult(chooserIntent, SELECT_PICTURE);
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        final String appDirectoryName = "FinTrip";
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),appDirectoryName);
+        if (!storageDir.exists()){
+            if (!storageDir.mkdirs()){
+                Log.d("CameraTest", "failed to create directory");
+            }
+        }
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -236,10 +328,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     }
 
 
-    private void updateForCurrentLocation() {
+    private Address updateForCurrentLocation() {
         final Location location = locationServiceInitial();
         if(location==null)
-            return;
+            return null;
 
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
@@ -251,16 +343,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             addresses = gcd.getFromLocation(latitude, longitude, 1);
 
             if(addresses.size()>0){
-                Locale locale = addresses.get(0).getLocale();
-
-                // update view
-                priceCurrency.setText(displayCurrencyInfoForLocale(locale));
-                tvLocation.setText(addresses.get(0).getLocality());
+                return addresses.get(0);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private void checkAccessLocationPermission(){
@@ -334,7 +423,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         FragmentManager fm = getSupportFragmentManager();
         EditItemFragment editNameDialogFragment = EditItemFragment.newInstance();
         editNameDialogFragment.show(fm, "fragment_edit_item");
-
     }
 
     @Override
@@ -343,17 +431,75 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
 
-        updateForCurrentLocation();
+        Address address = updateForCurrentLocation();
 
-        //TODO: update view
+        if(address!=null){
+            Locale locale = address.getLocale();
+
+            // update view
+            String priceCurrencyInfo = displayCurrencyInfoForLocale(locale);
+            priceCurrency.setText(priceCurrencyInfo);
+            item.setPriceCurrency(priceCurrencyInfo);
+
+            priceCurrency.setVisibility(View.VISIBLE);
+
+            String location = address.getLocality();
+            tvLocation.setText(location);
+            item.setLocation(location);
+
+            prepareCurrencyExchangeSection(displayCurrencyInfoForLocale(locale));
+
+            rlTargetPrice.setVisibility(View.VISIBLE);
+            rlTargetCurrency.setVisibility(View.VISIBLE);
+        }
+
+        updateItemInDB();
 
         etPrice.setVisibility(View.VISIBLE);
         tvLocation.setVisibility(View.VISIBLE);
-        //locationMark.setVisibility(View.GONE);
-        //detailsPic.setVisibility(View.GONE);
-        //rlTargetPrice.setVisibility(View.GONE);
-        //rlTargetCurrency.setVisibility(View.GONE);
-
+        locationMark.setVisibility(View.VISIBLE);
         owner.setVisibility(View.VISIBLE);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+
+            Uri imageURI = null;
+            File f = new File(mCurrentPhotoPath);
+            try {
+
+                if(data != null && data.getData() != null){
+                    f.delete();
+                    imageURI = data.getData();
+                } else {
+                    imageURI = Uri.fromFile(f);
+                    // galleryAddPic(imageURI);
+                }
+                Log.d("imageURI",imageURI.toString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            item.setPriceTagImageUrl(imageURI.toString());
+
+            //display detailsPic
+
+            detailsPic.setVisibility(View.VISIBLE);
+            Glide.with(getBaseContext())
+                    .load(imageURI.toString())
+                    //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
+                    .centerCrop()
+                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(detailsPic);
+
+            updateItemInDB();
+        }
+    }
+
+    private void updateItemInDB(){
+        // save item back to db
     }
 }

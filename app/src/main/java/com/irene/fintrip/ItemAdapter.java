@@ -1,6 +1,8 @@
 package com.irene.fintrip;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +27,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public ImageView ivStar;
+        public ImageView ivBought;
+        public ImageView ivPaid;
         public ImageView ivProduct;
         public TextView tvOwner;
         public TextView tvPrice;
@@ -37,7 +40,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
             // to access the context from any ViewHolder instance.
             super(itemView);
 
-            ivStar = (ImageView) itemView.findViewById(R.id.ivStar);
+            ivBought = (ImageView) itemView.findViewById(R.id.ivBought);
+            ivPaid = (ImageView) itemView.findViewById(R.id.ivPaid);
             ivProduct = (ImageView) itemView.findViewById(R.id.ivProduct);
             tvOwner = (TextView) itemView.findViewById(R.id.tvOwner);
             tvPrice = (TextView) itemView.findViewById(R.id.tvPrice);
@@ -94,7 +98,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
 //        viewHolder.getBinding().executePendingBindings();
 
         // Set item views based on your views and data model
-        ImageView ivStar = viewHolder.ivStar;
+        final ImageView ivBought = viewHolder.ivBought;
+        final ImageView ivPaid = viewHolder.ivPaid;
+
+
+        ivBought.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivBought.setColorFilter(Color.parseColor("#B2FF59"), PorterDuff.Mode.MULTIPLY);
+            }
+        });
+
+        ivPaid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivPaid.setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.MULTIPLY);
+            }
+        });
+
 
         ImageView ivProduct = viewHolder.ivProduct;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -111,7 +132,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         tvOwner.setText(item.getOwner());
 
         TextView tvPrice = viewHolder.tvPrice;
-        tvPrice.setText(item.getPrice());
+        tvPrice.setText(item.getPrice().toString());
 
     }
 
