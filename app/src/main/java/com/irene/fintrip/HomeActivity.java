@@ -22,6 +22,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.irene.fintrip.Utils.DatabaseUtil;
+
 import org.parceler.Parcels;
 
 import java.io.File;
@@ -29,7 +32,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -47,10 +52,14 @@ public class HomeActivity extends AppCompatActivity {
     FloatingActionButton fabCreate;
     List<Item> items;
 
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        mDatabase = DatabaseUtil.getDatabase().getReference();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.homeToolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
@@ -244,6 +253,20 @@ public class HomeActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    //write
+    private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+        // Create new item at /user-buylists/$userid/$buylistid and at
+        String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        Item item = new Item(isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid);
+
+        Map<String, Object> itemValues = item.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/buylist-items/" + tripId + "/" + key, itemValues);
+
+        mDatabase.updateChildren(childUpdates);
     }
 
 }

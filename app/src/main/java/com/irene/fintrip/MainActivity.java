@@ -22,19 +22,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.irene.fintrip.models.User;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String BASE_URL = "http://api.fixer.io";
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-//    private DatabaseReference mDatabase;
 
 
     /* *************************************
@@ -52,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
 
@@ -62,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         //initialize the FirebaseAuth instance and the AuthStateListener method so you can track whenever the user signs in or out.
         mAuth = FirebaseAuth.getInstance();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Callback registration
         mFacebookLoginButton.registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
@@ -97,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent i = new Intent(MainActivity.this,TripListActivity.class);
                     startActivity(i);
+                    finish();
                 } else {
                     // User is signed out
                     Log.d("DEBUG", "onAuthStateChanged:signed_out");
@@ -150,17 +144,6 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
-    }
-    //need to do with user node in database
-    private void writeNewUser(String uid, String displayName,String email, String photoUrl) {
-        User user = new User(uid, displayName,email, photoUrl);
-        Map<String, Object> userMap = user.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-//        childUpdates.put("/buylists/" + key, postValues);
-        childUpdates.put("/users/"+uid, userMap);
-
-        mDatabase.updateChildren(childUpdates);
     }
 
 }
