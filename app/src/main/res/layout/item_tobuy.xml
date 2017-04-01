@@ -12,18 +12,19 @@
     android:padding="5dp"
     android:background="@drawable/item_border">
 
-    <ImageView
-        android:id="@+id/ivStar"
+    <TextView
+        android:id="@+id/tvOwner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/ivProduct"
-        android:src="@drawable/ic_star_border" />
+        android:text="Default Owner"
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/ivProduct"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@+id/ivStar"
+        android:layout_below="@+id/tvOwner"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
         android:layout_marginTop="5dp"
@@ -33,14 +34,22 @@
         app:srcCompat="@mipmap/ic_launcher"
         android:background="@drawable/image_border" />
 
-    <TextView
-        android:id="@+id/tvOwner"
+    <ImageView
+        android:id="@+id/ivBought"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/ivProduct"
         android:layout_below="@+id/ivProduct"
-        android:text="Default Owner"
-        android:textSize="16sp" />
+        android:src="@drawable/ic_check_circle_black_24dp" />
+
+    <ImageView
+        android:id="@+id/ivPaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivProduct"
+        android:layout_toRightOf="@id/ivBought"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/ic_monetization_on_black_24dp" />
 
     <TextView
         android:id="@+id/tvPrice"
