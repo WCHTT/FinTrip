@@ -16,7 +16,7 @@ public class DatabaseUtil {
     public static FirebaseDatabase getDatabase() {
         if (mDatabase == null) {
             Log.e("DEBUG", "new DB instance");
-//            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             mDatabase = FirebaseDatabase.getInstance();
         }
         return mDatabase;
