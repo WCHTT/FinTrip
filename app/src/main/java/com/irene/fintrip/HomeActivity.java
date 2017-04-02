@@ -252,19 +252,11 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-<<<<<<< HEAD
+
             //Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
             writeItemList(tripID,false,imageURI.toString(),"IRENE",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
             //items.add(0,item);
             //itemAdapter.notifyItemInserted(0);
-=======
-            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
-            Log.e("DEBUG",tripID);
-            Log.e("DEBUG", imageURI.toString());
-            writeItemList(tripID,false,imageURI.toString(),"CHAO",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
-            items.add(0,item);
-            itemAdapter.notifyItemInserted(0);
->>>>>>> merge-branch
         }
     }
 
