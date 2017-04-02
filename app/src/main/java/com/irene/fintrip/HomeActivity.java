@@ -112,6 +112,8 @@ public class HomeActivity extends AppCompatActivity {
         rvToBuyItem.setLayoutManager(linearLayoutManager);
         rvToBuyItem.setHasFixedSize(true);
 
+        getItemList(tripID);
+
         ItemClickSupport.addTo(rvToBuyItem).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
@@ -270,7 +272,7 @@ public class HomeActivity extends AppCompatActivity {
     private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         // Create new item at /user-buylists/$userid/$buylistid and at
         String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
-        Item item = new Item(isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
+        Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
 
         Map<String, Object> itemValues = item.toMap();
 
@@ -281,23 +283,23 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     //read
-    private void getNewBuyList(String tripId) {
+    private void getItemList(String tripId) {
 
-        Query myTopTripsQuery = mDatabase.child("buylist-items").child(tripId).orderByChild("createdTimeStampOrder").limitToFirst(100);
-        myTopTripsQuery.addValueEventListener(new ValueEventListener() {
+        Query myTopItemsQuery = mDatabase.child("buylist-items").child(tripId).orderByChild("createdTimeStampOrder").limitToFirst(100);
+        myTopItemsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                allTrips.clear();
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                items.clear();
+                for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
-                    Map<String, Object> itemValues = (Map<String, Object>) postSnapshot.getValue();
-                    Item item = new Item((boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),(Double)itemValues.get("price"),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
+                    Map<String, Object> itemValues = (Map<String, Object>) itemSnapshot.getValue();
+                    Log.e("DEBUG", String.valueOf(itemValues.get("price")));
+                    Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
                     Log.e("DEBUG", String.valueOf(item.getOwner()));
-//                    allTrips.add(trip);
-
+                    items.add(item);
 
                 }
-//                tripsAdapter.notifyDataSetChanged();
+                itemAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -307,6 +309,11 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    //delete
+    private void deleteItem(String tripId, String itemId) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
     }
 
 }

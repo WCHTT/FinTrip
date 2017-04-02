@@ -24,7 +24,8 @@ public class Item {
         this.price = price;
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+        this.itemId = itemId;
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
@@ -41,6 +42,7 @@ public class Item {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("itemId", itemId);
         result.put("isBuy", isBuy);
         result.put("imageUrl", imageUrl);
         result.put("owner", owner);
@@ -146,6 +148,15 @@ public class Item {
         this.createdTimeStampOrder = createdTimeStampOrder;
     }
 
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    String itemId;
     boolean isBuy;
     String imageUrl;
     String owner;
