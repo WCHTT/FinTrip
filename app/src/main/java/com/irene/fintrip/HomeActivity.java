@@ -78,6 +78,8 @@ public class HomeActivity extends AppCompatActivity {
         tvToolbar.setText("- "+extras.getString("tripName"));
         tripID = extras.getString("tripId");
 
+        Log.d("DEBUG:tripID",tripID);
+
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
                 Manifest.permission.CAMERA)
@@ -239,10 +241,10 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
-            writeItemList(tripID,false,imageURI.toString(),"CHAO",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
-            items.add(0,item);
-            itemAdapter.notifyItemInserted(0);
+            //Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            writeItemList(tripID,false,imageURI.toString(),"IRENE",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            //items.add(0,item);
+            //itemAdapter.notifyItemInserted(0);
         }
     }
 
