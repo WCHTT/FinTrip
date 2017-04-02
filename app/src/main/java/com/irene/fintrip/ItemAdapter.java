@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
@@ -22,8 +21,6 @@ import java.util.List;
  */
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
-
-    private DatabaseReference mDatabase;
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -95,7 +92,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         // Get the data model based on position
-        Item item = mItem.get(position);
+        final Item item = mItem.get(position);
 
 //        viewHolder.getBinding().setVariable(com.codepath.apps.simpletweets.BR.tweet,tweet);
 //        viewHolder.getBinding().executePendingBindings();
@@ -104,18 +101,39 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         final ImageView ivBought = viewHolder.ivBought;
         final ImageView ivPaid = viewHolder.ivPaid;
 
+        if(item.isBuy()){
+            ivBought.setColorFilter(Color.parseColor("#B2FF59"), PorterDuff.Mode.MULTIPLY);
+        }
+        if(item.isPaid()){
+            ivPaid.setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.MULTIPLY);
+        }
+
 
         ivBought.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivBought.setColorFilter(Color.parseColor("#B2FF59"), PorterDuff.Mode.MULTIPLY);
+                if(!item.isBuy() && mContext instanceof HomeActivity){
+                    ((HomeActivity)mContext).updateIsBuy(((HomeActivity)mContext).getTripID(),item.getItemId(),true);
+                    ivBought.setColorFilter(Color.parseColor("#B2FF59"), PorterDuff.Mode.MULTIPLY);
+                }
+                else{
+                    ((HomeActivity)mContext).updateIsBuy(((HomeActivity)mContext).getTripID(),item.getItemId(),false);
+                    ivBought.setColorFilter(Color.parseColor("#d4d3d3"), PorterDuff.Mode.MULTIPLY);
+                }
             }
         });
 
         ivPaid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivPaid.setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.MULTIPLY);
+                if(!item.isPaid() && mContext instanceof HomeActivity){
+                    ((HomeActivity)mContext).updateIsPaid(((HomeActivity)mContext).getTripID(),item.getItemId(),true);
+                    ivPaid.setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.MULTIPLY);
+                }
+                else{
+                    ((HomeActivity)mContext).updateIsPaid(((HomeActivity)mContext).getTripID(),item.getItemId(),false);
+                    ivPaid.setColorFilter(Color.parseColor("#d4d3d3"), PorterDuff.Mode.MULTIPLY);
+                }
             }
         });
 
@@ -144,5 +162,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
     public int getItemCount() {
         return mItem.size();
     }
+
 
 }

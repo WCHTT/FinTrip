@@ -126,6 +126,14 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        ItemClickSupport.addTo(rvToBuyItem).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                deleteItem(tripID,items.get(position).getItemId());
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -137,6 +145,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onChargeAction(MenuItem mi) {
         Intent i = new Intent(getApplicationContext(),ChargeActivity.class);
+        i.putExtra("tripID",tripID);
         startActivity(i);
     }
 
@@ -313,19 +322,23 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    //delete
+    private void deleteItem(String tripId, String itemId) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
+    }
+
     //update
-    private void updateIsBuy(String tripId, String itemId, boolean isBuy) {
+    public void updateIsBuy(String tripId, String itemId, boolean isBuy) {
         mDatabase.child("buylist-items").child(tripId).child(itemId).child("isBuy").setValue(isBuy);
     }
 
     //update
-    private void updateIsPaid(String tripId, String itemId, boolean isPaid) {
+    public void updateIsPaid(String tripId, String itemId, boolean isPaid) {
         mDatabase.child("buylist-items").child(tripId).child(itemId).child("isPaid").setValue(isPaid);
     }
 
-    //delete
-    private void deleteItem(String tripId, String itemId) {
-        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
+    public String getTripID(){
+        return tripID;
     }
 
 }
