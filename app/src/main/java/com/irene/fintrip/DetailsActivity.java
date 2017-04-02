@@ -32,7 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DatabaseReference;
 import com.irene.fintrip.API.FixerAPIEndpointInterface;
+import com.irene.fintrip.Utils.DatabaseUtil;
 import com.irene.fintrip.fragment.EditItemFragment;
 import com.irene.fintrip.model.CurrencyExchange;
 import com.irene.fintrip.model.Rates;
@@ -44,8 +46,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -88,6 +92,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private static final int INITIAL_REQUEST=1337;
     private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
 
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +104,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
+
+        mDatabase = DatabaseUtil.getDatabase().getReference();
 
         //if (!canAccessLocation() ) {
         //    requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
@@ -501,5 +509,14 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private void updateItemInDB(){
         // save item back to db
+    }
+
+    //update
+    private void updateItemList(String tripId, Item modifyItem) {
+        Map<String, Object> itemValues = modifyItem.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/buylist-items/" + tripId, itemValues);
+
+        mDatabase.updateChildren(childUpdates);
     }
 }

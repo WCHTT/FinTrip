@@ -17,7 +17,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.irene.fintrip.Utils.DatabaseUtil;
@@ -147,9 +146,9 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 allTrips.clear();
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot tripSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
-                    Map<String, Object> tripValues = (Map<String, Object>) postSnapshot.getValue();
+                    Map<String, Object> tripValues = (Map<String, Object>) tripSnapshot.getValue();
                     Trip trip = new Trip((String)tripValues.get("buyListId"),(String)tripValues.get("authorId"),(String)tripValues.get("authorName"),(String)tripValues.get("createdTime"), (Long)tripValues.get("createdTimeStampOrder"),(String)tripValues.get("listName"));
                     Log.e("DEBUG", String.valueOf(trip.getAuthorId()));
                     allTrips.add(trip);
@@ -182,6 +181,7 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
     //delete
     private void deleteBuyList(String authorId, String tripId) {
         mDatabase.child("user-buylists").child(authorId).child(tripId).removeValue();
+        mDatabase.child("buylist-items").child(tripId).removeValue();
     }
 
     @Override
