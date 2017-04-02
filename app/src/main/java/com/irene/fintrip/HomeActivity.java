@@ -311,6 +311,16 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    //update
+    private void updateIsBuy(String tripId, String itemId, boolean isBuy) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).child("isBuy").setValue(isBuy);
+    }
+
+    //update
+    private void updateIsPaid(String tripId, String itemId, boolean isPaid) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).child("isPaid").setValue(isPaid);
+    }
+
     //delete
     private void deleteItem(String tripId, String itemId) {
         mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
