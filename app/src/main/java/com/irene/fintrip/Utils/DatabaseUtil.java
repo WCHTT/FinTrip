@@ -1,5 +1,7 @@
 package com.irene.fintrip.Utils;
 
+import android.util.Log;
+
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
@@ -13,9 +15,9 @@ public class DatabaseUtil {
 
     public static FirebaseDatabase getDatabase() {
         if (mDatabase == null) {
+            Log.e("DEBUG", "new DB instance");
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             mDatabase = FirebaseDatabase.getInstance();
-            //mDatabase.setPersistenceEnabled(true);
         }
         return mDatabase;
     }
