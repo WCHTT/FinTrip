@@ -134,6 +134,8 @@ public class TripListActivity extends AppCompatActivity implements TripItemFragm
         childUpdates.put("/user-buylists/" + authorId + "/" + key, tripValues);
 
         mDatabase.updateChildren(childUpdates);
+
+        mDatabase.child("buylist-items").child(key).setValue(null);
     }
 
     //read

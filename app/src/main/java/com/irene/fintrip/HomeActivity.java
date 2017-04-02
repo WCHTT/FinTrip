@@ -104,6 +104,8 @@ public class HomeActivity extends AppCompatActivity {
         rvToBuyItem = (RecyclerView) findViewById(R.id.rvRequest);
         // Initialize contacts
         items = new ArrayList<>();
+
+        getItemList(tripID);
 //        items = Item.createItemList(1);
         // Create adapter passing in the sample user data
         itemAdapter = new ItemAdapter(this,items);
@@ -114,7 +116,7 @@ public class HomeActivity extends AppCompatActivity {
         rvToBuyItem.setLayoutManager(linearLayoutManager);
         rvToBuyItem.setHasFixedSize(true);
 
-        getItemList(tripID);
+
 
         ItemClickSupport.addTo(rvToBuyItem).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
@@ -250,10 +252,19 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
+<<<<<<< HEAD
             //Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
             writeItemList(tripID,false,imageURI.toString(),"IRENE",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
             //items.add(0,item);
             //itemAdapter.notifyItemInserted(0);
+=======
+            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            Log.e("DEBUG",tripID);
+            Log.e("DEBUG", imageURI.toString());
+            writeItemList(tripID,false,imageURI.toString(),"CHAO",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            items.add(0,item);
+            itemAdapter.notifyItemInserted(0);
+>>>>>>> merge-branch
         }
     }
 
@@ -283,6 +294,7 @@ public class HomeActivity extends AppCompatActivity {
     private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         // Create new item at /user-buylists/$userid/$buylistid and at
         String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        Log.e("DEBUG",tripId + " " + key);
         Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
 
         Map<String, Object> itemValues = item.toMap();
@@ -300,17 +312,23 @@ public class HomeActivity extends AppCompatActivity {
         myTopItemsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                items.clear();
-                for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
-                    // TODO: handle the post
-                    Map<String, Object> itemValues = (Map<String, Object>) itemSnapshot.getValue();
-                    Log.e("DEBUG", String.valueOf(itemValues.get("price")));
-                    Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
-                    Log.e("DEBUG", String.valueOf(item.getOwner()));
-                    items.add(item);
 
+                if(dataSnapshot != null)
+                {
+                    Log.e("DEBUG", "not null");
+                    items.clear();
+                    for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
+                        // TODO: handle the post
+                        Map<String, Object> itemValues = (Map<String, Object>) itemSnapshot.getValue();
+                        Log.e("DEBUG", String.valueOf(itemValues.get("price")));
+                        Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
+                        Log.e("DEBUG", String.valueOf(item.getOwner()));
+                        items.add(item);
+
+                    }
+                    itemAdapter.notifyDataSetChanged();
                 }
-                itemAdapter.notifyDataSetChanged();
+
             }
 
             @Override
