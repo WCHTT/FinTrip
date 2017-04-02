@@ -22,7 +22,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.irene.fintrip.Utils.DatabaseUtil;
 
 import org.parceler.Parcels;
@@ -266,7 +270,7 @@ public class HomeActivity extends AppCompatActivity {
     private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         // Create new item at /user-buylists/$userid/$buylistid and at
         String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
-        Item item = new Item(isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid);
+        Item item = new Item(isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
 
         Map<String, Object> itemValues = item.toMap();
 
@@ -274,6 +278,35 @@ public class HomeActivity extends AppCompatActivity {
         childUpdates.put("/buylist-items/" + tripId + "/" + key, itemValues);
 
         mDatabase.updateChildren(childUpdates);
+    }
+
+    //read
+    private void getNewBuyList(String tripId) {
+
+        Query myTopTripsQuery = mDatabase.child("buylist-items").child(tripId).orderByChild("createdTimeStampOrder").limitToFirst(100);
+        myTopTripsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                allTrips.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    // TODO: handle the post
+                    Map<String, Object> itemValues = (Map<String, Object>) postSnapshot.getValue();
+                    Item item = new Item((boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),(Double)itemValues.get("price"),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
+                    Log.e("DEBUG", String.valueOf(item.getOwner()));
+//                    allTrips.add(trip);
+
+
+                }
+//                tripsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("DEBUG", "loadPost:onCancelled", databaseError.toException());
+
+            }
+        });
     }
 
 }
