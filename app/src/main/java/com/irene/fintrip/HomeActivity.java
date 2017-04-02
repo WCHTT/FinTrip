@@ -253,10 +253,10 @@ public class HomeActivity extends AppCompatActivity {
             Date createTime = new Date();
 
 
-            //Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+//            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
             writeItemList(tripID,false,imageURI.toString(),"IRENE",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
-            //items.add(0,item);
-            //itemAdapter.notifyItemInserted(0);
+//            items.add(0,item);
+//            itemAdapter.notifyItemInserted(0);
         }
     }
 
