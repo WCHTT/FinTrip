@@ -122,6 +122,7 @@ public class HomeActivity extends AppCompatActivity {
                 // do it
                 Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
                 i.putExtra("item", Parcels.wrap(items.get(position)));
+                i.putExtra("tripId", tripID);
                 startActivity(i);
             }
         });
@@ -241,10 +242,10 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            Item item = new Item(true,imageURI.toString(),"IRENE",100.0);
             Log.e("DEBUG",tripID);
             Log.e("DEBUG", imageURI.toString());
-            writeItemList(tripID,false,imageURI.toString(),"CHAO",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            writeItemList(tripID,false,imageURI.toString(),"IRENE",100.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
             items.add(0,item);
             itemAdapter.notifyItemInserted(0);
         }
