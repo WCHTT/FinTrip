@@ -105,6 +105,17 @@ public class Rates {
     @SerializedName("EUR")
     @Expose
     private Double eUR;
+
+    public Double getNTD() {
+        return NTD;
+    }
+
+    public void setNTD(Double NTD) {
+        this.NTD = NTD;
+    }
+
+    private Double NTD;
+
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public Double getAUD() {

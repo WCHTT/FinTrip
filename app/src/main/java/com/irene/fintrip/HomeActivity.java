@@ -253,10 +253,14 @@ public class HomeActivity extends AppCompatActivity {
             Date createTime = new Date();
 
 
-//            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
-            writeItemList(tripID,false,imageURI.toString(),"IRENE",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
 //            items.add(0,item);
 //            itemAdapter.notifyItemInserted(0);
+
+            Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+            i.putExtra("item", Parcels.wrap(item));
+            startActivity(i);
         }
     }
 

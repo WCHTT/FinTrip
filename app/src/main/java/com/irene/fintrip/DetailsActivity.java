@@ -151,7 +151,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
 
         // Required item
-        if(item.getImageUrl()!=""){
+        if(item.getImageUrl()!= null && item.getImageUrl()!=""){
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
@@ -216,8 +216,19 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         call.enqueue(new Callback<CurrencyExchange>() {
             @Override
             public void onResponse(Call<CurrencyExchange> call, Response<CurrencyExchange> response) {
+
+
                 int statusCode = response.code();
-                rates = response.body().getRates();
+                Log.d("DEBUG:statusCode",String.valueOf(statusCode));
+                if(statusCode == 422){
+                    rates = new Rates();
+                    rates.setNTD(30.0);
+                }
+                else{
+                    rates = response.body().getRates();
+                }
+
+
 
                 // TODO:get supported currency exchange rate for dropdown from api
                 //final String[] currency = {"JPY", "KRW", "CNY"};
@@ -338,11 +349,15 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private Address updateForCurrentLocation() {
         final Location location = locationServiceInitial();
-        if(location==null)
+        if(location==null){
+            Log.d("DEBUG:location","location null");
             return null;
+        }
+
 
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
+        Log.d("DEBUG:location",String.valueOf(latitude) + "," + String.valueOf(longitude));
         // Helper.log(TAG, "latitude: " +latitude);
         List<Address> addresses = null;
         Geocoder gcd = new Geocoder(getBaseContext());
@@ -416,6 +431,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             return null;
         }
         Location location = lms.getLastKnownLocation(bestProvider);
+
         return location;
     }
 

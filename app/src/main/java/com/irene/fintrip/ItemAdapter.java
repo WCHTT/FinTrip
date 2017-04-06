@@ -61,8 +61,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
     }
 
     // Pass in the contact array into the constructor
-    public ItemAdapter(Context context, List<Item> tweets) {
-        mItem = tweets;
+    public ItemAdapter(Context context, List<Item> items) {
+        mItem = items;
         mContext = context;
     }
 
