@@ -124,6 +124,7 @@ public class HomeActivity extends AppCompatActivity {
                 // do it
                 Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
                 i.putExtra("item", Parcels.wrap(items.get(position)));
+                i.putExtra("tripId", tripID);
                 startActivity(i);
             }
         });
@@ -261,6 +262,7 @@ public class HomeActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
             i.putExtra("item", Parcels.wrap(item));
             startActivity(i);
+
         }
     }
 

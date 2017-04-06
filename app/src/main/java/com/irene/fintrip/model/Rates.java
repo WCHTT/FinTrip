@@ -1,5 +1,6 @@
 package com.irene.fintrip.model;
 
+import com.google.firebase.database.Exclude;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -117,6 +118,42 @@ public class Rates {
     private Double NTD;
 
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("AUD", aUD);
+        result.put("BGN", bGN);
+        result.put("BRL", bRL);
+        result.put("CAD", cAD);
+        result.put("CHF", cHF);
+        result.put("CNY", cNY);
+        result.put("CZK", cZK);
+        result.put("DKK", dKK);
+        result.put("GBP", gBP);
+        result.put("HKD", hKD);
+        result.put("HRK", hRK);
+        result.put("HUF", hUF);
+        result.put("IDR", iDR);
+        result.put("ILS", iLS);
+        result.put("INR", iNR);
+        result.put("JPY", jPY);
+        result.put("KRW", kRW);
+        result.put("MXN", mXN);
+        result.put("MYR", mYR);
+        result.put("NOK", nOK);
+        result.put("NZD", nZD);
+        result.put("PHP", pHP);
+        result.put("PLN", pLN);
+        result.put("RON", rON);
+        result.put("RUB", rUB);
+        result.put("SEK", sEK);
+        result.put("SGD", sGD);
+        result.put("THB", tHB);
+        result.put("TRY", tRY);
+        result.put("ZAR", zAR);
+        return result;
+    }
 
     public Double getAUD() {
         return aUD;
