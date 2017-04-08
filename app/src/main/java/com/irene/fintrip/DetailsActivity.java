@@ -380,20 +380,23 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private Location locationServiceInitial() {
         lms = (LocationManager) getSystemService(LOCATION_SERVICE); //取得系統定位服務
-        /*
-         //做法一,由程式判斷用GPS_provider
+        Location location;
+
+        //做法一,由程式判斷用GPS_provider
          if (lms.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
                location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //使用GPS定位座標
          }
          else if ( lms.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-         { location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
+         {
+             location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
          }
          else
            {
                location=null;
            }
-           */
 
+
+           /*
         // 做法二,由Criteria物件判斷提供最準確的資訊
         Criteria criteria = new Criteria();  //資訊提供者選取標準
         bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
@@ -407,7 +410,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             // for ActivityCompat#requestPermissions for more details.
             return null;
         }
-        Location location = lms.getLastKnownLocation(bestProvider);
+        location = lms.getLastKnownLocation(bestProvider);*/
         return location;
     }
 
