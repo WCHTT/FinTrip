@@ -9,7 +9,10 @@
     android:layout_marginBottom="10dp"
     android:layout_marginLeft="15dp"
     android:layout_marginRight="15dp"
-    android:padding="5dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
     android:background="@drawable/item_border">
 
     <TextView
@@ -18,17 +21,17 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/ivProduct"
         android:text="Default Owner"
-        android:textSize="16sp" />
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/ivProduct"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="220dp"
         android:layout_below="@+id/tvOwner"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="7dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         app:srcCompat="@mipmap/ic_launcher"
@@ -36,16 +39,16 @@
 
     <ImageView
         android:id="@+id/ivBought"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignLeft="@+id/ivProduct"
         android:layout_below="@+id/ivProduct"
         android:src="@drawable/ic_check_circle_black_24dp" />
 
     <ImageView
         android:id="@+id/ivPaid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_below="@+id/ivProduct"
         android:layout_toRightOf="@id/ivBought"
         android:layout_marginLeft="8dp"
@@ -58,8 +61,7 @@
         android:layout_alignRight="@+id/ivProduct"
         android:layout_below="@+id/ivProduct"
         android:text="Default Price"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="20sp" />
 
 
 

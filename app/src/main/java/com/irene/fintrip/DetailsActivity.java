@@ -82,10 +82,12 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private Item item;
     private String tripID;
+    private String tripName;
     private TextView owner;
     private TextView etPrice;
     private TextView tvLocation;
     private TextView priceCurrency;
+    private TextView buyerLabel;
     private ImageView ivItemImage;
     FloatingActionButton fabCreate;
 
@@ -154,7 +156,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
-        TextView buyerLabel = (TextView) findViewById(R.id.buyerLabel);
+        buyerLabel = (TextView) findViewById(R.id.buyerLabel);
         tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(tPrice);
@@ -172,13 +174,20 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
         tripID = getIntent().getExtras().getString("tripId");
+        tripName = getIntent().getExtras().getString("tripName");
+
+
+        TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
+        tvToolbar.setText(tripName);
 
         // Required item
         if(item.getImageUrl()!= null && !item.getImageUrl().equals("")){
+            Log.e("DEBUG", item.getImageUrl());
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .dontAnimate()
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
@@ -575,6 +584,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
         owner.setText(ownerName);
+        buyerLabel.setVisibility(View.VISIBLE);
         item.setOwner(ownerName);
 
         etPrice.setText(price);
