@@ -58,6 +58,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
+import static com.irene.fintrip.R.id.location;
 
 public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
     String mCurrentPhotoPath;
@@ -140,7 +141,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
-        tvLocation = (TextView) findViewById(R.id.location);
+        tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(R.id.tPrice);
         etPrice = (TextView) findViewById(R.id.price);
@@ -157,7 +158,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         tripID = getIntent().getExtras().getString("tripId");
 
         // Required item
-        if(item.getImageUrl()!=""){
+        if(item.getImageUrl()!= null && item.getImageUrl()!=""){
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
@@ -222,8 +223,19 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         call.enqueue(new Callback<CurrencyExchange>() {
             @Override
             public void onResponse(Call<CurrencyExchange> call, Response<CurrencyExchange> response) {
+
+
                 int statusCode = response.code();
-                rates = response.body().getRates();
+                Log.d("DEBUG:statusCode",String.valueOf(statusCode));
+                if(statusCode == 422){
+                    rates = new Rates();
+                    rates.setNTD(30.0);
+                }
+                else{
+                    rates = response.body().getRates();
+                }
+
+
 
                 // TODO:get supported currency exchange rate for dropdown from api
                 //final String[] currency = {"JPY", "KRW", "CNY"};
@@ -347,8 +359,11 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         if(location==null)
             return null;
 
+
+
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
+        Log.d("DEBUG:location",String.valueOf(latitude) + "," + String.valueOf(longitude));
         // Helper.log(TAG, "latitude: " +latitude);
         List<Address> addresses = null;
         Geocoder gcd = new Geocoder(getBaseContext());
@@ -426,8 +441,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
 
 //        Location location = lms.getLastKnownLocation(bestProvider);
-        lms.requestLocationUpdates(networkProvider, 1000, 10 ,locationListener);
-        lms.requestLocationUpdates(gpsProvider, 1000, 10 ,locationListener);
+        lms.requestLocationUpdates(networkProvider, 1000, 0 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 0 ,locationListener);
 
 //        return location;
     }
