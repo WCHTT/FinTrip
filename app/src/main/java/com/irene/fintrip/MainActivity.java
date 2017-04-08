@@ -74,7 +74,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException exception) {
                 // App code
-                Toast.makeText(getApplicationContext(), "" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                if(exception.getMessage().contains("net"))
+                {
+                    Toast.makeText(getApplicationContext(), "Please open your network or wifi!", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 

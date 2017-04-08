@@ -26,16 +26,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.irene.fintrip.API.FixerAPIEndpointInterface;
 import com.irene.fintrip.Utils.DatabaseUtil;
+import com.irene.fintrip.fragment.DisplayPictureFragment;
 import com.irene.fintrip.fragment.EditItemFragment;
 import com.irene.fintrip.model.CurrencyExchange;
 import com.irene.fintrip.model.Rates;
@@ -61,6 +69,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
 import static com.irene.fintrip.R.id.location;
+import static com.irene.fintrip.R.id.tPrice;
 
 public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
     String mCurrentPhotoPath;
@@ -80,8 +89,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private ImageView locationMark;
     private ImageView detailsPic;
-    private RelativeLayout rlTargetCurrency;
-    private RelativeLayout rlTargetPrice;
+    private LinearLayout rlTargetPrice;
     private String baseCurrency;
     private String[] currency = {"JPY", "USD"};
     private Double itemPrice;
@@ -104,6 +112,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        supportPostponeEnterTransition();
 
         // Find the toolbar view inside the activity layout
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -146,16 +155,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
-        tvTargetPrice = (TextView) findViewById(R.id.tPrice);
+        tvTargetPrice = (TextView) findViewById(tPrice);
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
         ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
         locationMark  = (ImageView) findViewById(R.id.locationMark);
         detailsPic  = (ImageView) findViewById(R.id.detailsPic);
-        rlTargetCurrency  = (RelativeLayout) findViewById(R.id.rlTargetCurrency);
-        rlTargetPrice  = (RelativeLayout) findViewById(R.id.rlTargetPrice);
+        rlTargetPrice  = (LinearLayout) findViewById(R.id.rlTargetPrice);
 
-        // TODO: Load data from DB for this item
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String imageTransitionName = getIntent().getExtras().getString("transitionName");
+            ivItemImage.setTransitionName(imageTransitionName);
+        }
 
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
         tripID = getIntent().getExtras().getString("tripId");
@@ -166,10 +177,23 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
+                    .dontAnimate()
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            supportStartPostponedEnterTransition();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            supportStartPostponedEnterTransition();
+                            return false;
+                        }
+                    })
                     //.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivItemImage);
         }
-
         // optional
         if(item.getOwner()!=null && !item.getOwner().equals(""))
             owner.setText(item.getOwner());
@@ -191,7 +215,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             tvLocation.setVisibility(View.INVISIBLE);
             locationMark.setVisibility(View.INVISIBLE);
             rlTargetPrice.setVisibility(View.INVISIBLE);
-            rlTargetCurrency.setVisibility(View.INVISIBLE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            detailsPic.setClipToOutline(true);
         }
 
         if(item.getPriceTagImageUrl()!=null && !item.getPriceTagImageUrl().equals(""))
@@ -210,6 +237,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
             setSpinnerToValue(spinner, item.getTargetCurrency());
+        }
+
+        if(item.getTargetPrice()!=null && item.getTargetPrice()!=0.0) {
+           tvTargetPrice.setText(item.getTargetPrice().toString());
         }
 
         ImageView priceTagImageCamera = (ImageView) findViewById(R.id.pic);
@@ -268,36 +299,60 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 //        currency);
                 //spinner.setAdapter(currencyList);
 
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        // update target price
-                        Double tPrice = item.getPrice() * rates.get(currency[position]);
-                        DecimalFormat df = new DecimalFormat("##.00");
-                        tPrice = Double.parseDouble(df.format(tPrice));
-                        tvTargetPrice.setText(tPrice.toString());
+                updateTargetCurrency();
 
-                        item.setTargetCurrency(currency[position]);
-                        updateItemInDB();
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-                if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
-                    Double tPrice = item.getPrice() * rates.get(item.getTargetCurrency());
-                    DecimalFormat df = new DecimalFormat("##.00");
-                    tPrice = Double.parseDouble(df.format(tPrice));
-                    tvTargetPrice.setText(tPrice.toString());
-                }
+                updateCurrency(rates);
             }
 
             @Override
             public void onFailure(Call<CurrencyExchange> call, Throwable t) {
-                // Log error here since request failed
+                Query myTopItemsQuery = mDatabase.child("rates");
+                myTopItemsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot != null)
+                        {
+                            rates= new Rates();
+
+                                Map<String, Object> itemValues = (Map<String, Object>) dataSnapshot.getValue();
+                                Log.e("DEBUG", String.valueOf(itemValues.get("price")));
+                                rates = new Rates((Double) itemValues.get("JPY"),(Double)itemValues.get("USD"));
+
+                        }
+
+                        updateTargetCurrency();
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w("DEBUG", "loadPost:onCancelled", databaseError.toException());
+
+                    }
+                });
+            }
+        });
+    }
+    private void updateTargetCurrency(){
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // update target price
+                Double tPrice = item.getPrice() * rates.get(currency[position]);
+                DecimalFormat df = new DecimalFormat("##.00");
+                tPrice = Double.parseDouble(df.format(tPrice));
+                tvTargetPrice.setText(tPrice.toString());
+
+                item.setTargetCurrency(currency[position]);
+                item.setTargetPrice(tPrice);
+                updateItemInDB();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }
@@ -494,6 +549,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         editNameDialogFragment.show(fm, "fragment_edit_item");
     }
 
+    public void onClickDetailsPic(View v) {
+        // open dialog
+        FragmentManager fm = getSupportFragmentManager();
+        DisplayPictureFragment picFragment = DisplayPictureFragment.newInstance(item.getPriceTagImageUrl());
+        picFragment.show(fm, "fragment_picture");
+    }
+
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
         owner.setText(ownerName);
@@ -519,7 +581,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             prepareCurrencyExchangeSection(displayCurrencyInfoForLocale(locale));
 
             rlTargetPrice.setVisibility(View.VISIBLE);
-            rlTargetCurrency.setVisibility(View.VISIBLE);
         }
 
         updateItemInDB();
@@ -582,7 +643,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         mDatabase.updateChildren(childUpdates);
     }
 
-    private void updateCurrency2USD(Rates rates) {
+    private void updateCurrency(Rates rates) {
         Map<String, Object> rateValues = rates.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/rates", rateValues);
