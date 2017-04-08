@@ -33,6 +33,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -109,7 +112,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-
+        supportPostponeEnterTransition();
 
         // Find the toolbar view inside the activity layout
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -159,6 +162,11 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         detailsPic  = (ImageView) findViewById(R.id.detailsPic);
         rlTargetPrice  = (LinearLayout) findViewById(R.id.rlTargetPrice);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String imageTransitionName = getIntent().getExtras().getString("transitionName");
+            ivItemImage.setTransitionName(imageTransitionName);
+        }
+
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
         tripID = getIntent().getExtras().getString("tripId");
 
@@ -168,6 +176,20 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
+                    .dontAnimate()
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            supportStartPostponedEnterTransition();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            supportStartPostponedEnterTransition();
+                            return false;
+                        }
+                    })
                     //.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivItemImage);
         }
