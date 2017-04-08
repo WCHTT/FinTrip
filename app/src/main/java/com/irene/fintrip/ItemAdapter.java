@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,7 +109,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
             ivPaid.setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.MULTIPLY);
         }
 
-
         ivBought.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,6 +142,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ivProduct.setClipToOutline(true);
         }
+
+        ViewCompat.setTransitionName(viewHolder.ivProduct, item.getItemId());
+
 
         Glide.with(mContext)
                 .load(item.getImageUrl()) // Uri of the picture
