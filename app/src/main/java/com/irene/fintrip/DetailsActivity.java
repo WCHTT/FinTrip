@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -86,6 +87,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private TextView tvLocation;
     private TextView priceCurrency;
     private ImageView ivItemImage;
+    FloatingActionButton fabCreate;
 
     private ImageView locationMark;
     private ImageView detailsPic;
@@ -191,7 +193,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                             return false;
                         }
                     })
-                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivItemImage);
         }
         // optional
@@ -231,7 +233,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     .load(item.getPriceTagImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
-                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(detailsPic);
         }
         else{
@@ -255,6 +257,17 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             }
         });
 
+        createEditFab();
+    }
+
+    private void createEditFab() {
+        fabCreate = (FloatingActionButton) findViewById(R.id.fabEdit);
+        fabCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onEditAction();
+            }
+        });
     }
 
     public void setSpinnerToValue(Spinner spinner, String value) {
@@ -545,7 +558,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         return true;
     }
 
-    public void onEditAction(MenuItem mi) {
+    public void onEditAction() {
         // open dialog
         FragmentManager fm = getSupportFragmentManager();
         EditItemFragment editNameDialogFragment = EditItemFragment.newInstance(item.getOwner(),item.getPrice());
