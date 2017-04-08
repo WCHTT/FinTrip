@@ -78,10 +78,8 @@ public class ChargeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+//                HashMap<String, HashMap<String, Object>> ownerMap = new HashMap<String, HashMap<String,Object>>();
                 HashMap<String, HashMap<String, Double>> ownerMap = new HashMap<String, HashMap<String,Double>>();
-//                HashMap<String, Double> currencyMap = new HashMap<String, Double>();
-
-                //HashMap<String, Double> result = new HashMap<>();
 
                 for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
@@ -90,7 +88,7 @@ public class ChargeActivity extends AppCompatActivity {
                     Log.e("DEBUG:owner", String.valueOf(itemValues.get("owner")));
                     Log.e("DEBUG:isPaid", String.valueOf(itemValues.get("isPaid")));
 
-                    if(!(Boolean)itemValues.get("isPaid")){
+                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid")){
                         if(ownerMap.get(itemValues.get("owner")) == null){
                             HashMap<String, Double> currencyMap = new HashMap<String, Double>();
                             currencyMap.put((String)itemValues.get("targetCurrency"),((Number)itemValues.get("price")).doubleValue());
@@ -106,6 +104,19 @@ public class ChargeActivity extends AppCompatActivity {
                     }
 
 
+//                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
+//                        if(ownerMap.get(itemValues.get("owner")) == null){
+//                            HashMap<String, Object> currencyMap = new HashMap<String, Object>();
+//                            currencyMap.put((String)itemValues.get("itemId"),itemValues);
+//                            ownerMap.put((String)itemValues.get("owner"),currencyMap);
+//                        }
+//                        else {
+//                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("itemId")) == null) {
+//                                ownerMap.get(itemValues.get("owner")).put((String)itemValues.get("itemId"),itemValues);
+//                        }
+//                    }
+
+
                 }
                 for(String key : ownerMap.keySet() ){
                     for(String innerkey: ownerMap.get(key).keySet()){
@@ -113,6 +124,15 @@ public class ChargeActivity extends AppCompatActivity {
                         receipes.add(receipe);
                     }
                 }
+//                for(String key : ownerMap.keySet() ){
+//                    for(String innerkey: ownerMap.get(key).keySet()){
+//                        List<String> ListItemID;
+//                        Double totalPrice;
+//
+//                        Receipe receipe = new Receipe (key,ownerMap.get(key).get(innerkey),innerkey);
+//                        receipes.add(receipe);
+//                    }
+//                }
                 receipeAdapter.notifyDataSetChanged();
             }
 
