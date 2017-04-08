@@ -4,9 +4,9 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -32,7 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DatabaseReference;
 import com.irene.fintrip.API.FixerAPIEndpointInterface;
+import com.irene.fintrip.Utils.DatabaseUtil;
 import com.irene.fintrip.fragment.EditItemFragment;
 import com.irene.fintrip.model.CurrencyExchange;
 import com.irene.fintrip.model.Rates;
@@ -44,8 +46,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,6 +68,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private TextView tvTargetPrice;
 
     private Item item;
+    private String tripID;
     private TextView owner;
     private TextView etPrice;
     private TextView tvLocation;
@@ -77,8 +82,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private String baseCurrency;
     private String[] currency = {"JPY", "KRW", "CNY"};
     private Double itemPrice;
+    private Address address;
     private LocationManager lms;
-    private String bestProvider = LocationManager.GPS_PROVIDER;
+    private String gpsProvider;
+    private String networkProvider;
     private static final String[] LOCATION_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -87,6 +94,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private static final int INITIAL_REQUEST=1337;
     private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
+
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +107,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
+
+        mDatabase = DatabaseUtil.getDatabase().getReference();
+
+        locationServiceInitial();
 
         //if (!canAccessLocation() ) {
         //    requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
@@ -141,6 +154,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         // TODO: Load data from DB for this item
 
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
+        tripID = getIntent().getExtras().getString("tripId");
 
         // Required item
         if(item.getImageUrl()!=""){
@@ -328,8 +342,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     }
 
 
-    private Address updateForCurrentLocation() {
-        final Location location = locationServiceInitial();
+    private Address updateForCurrentLocation(Location location) {
+
         if(location==null)
             return null;
 
@@ -378,28 +392,27 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         return false;
     }
 
-    private Location locationServiceInitial() {
+    private void locationServiceInitial() {
         lms = (LocationManager) getSystemService(LOCATION_SERVICE); //取得系統定位服務
-        Location location;
-
-        //做法一,由程式判斷用GPS_provider
+        /*
+         //做法一,由程式判斷用GPS_provider
          if (lms.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
                location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //使用GPS定位座標
          }
          else if ( lms.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-         {
-             location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
+         { location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
          }
          else
            {
                location=null;
            }
+           */
 
-
-           /*
         // 做法二,由Criteria物件判斷提供最準確的資訊
-        Criteria criteria = new Criteria();  //資訊提供者選取標準
-        bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
+//        Criteria criteria = new Criteria();  //資訊提供者選取標準
+//        bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
+        gpsProvider = LocationManager.GPS_PROVIDER;
+        networkProvider = LocationManager.NETWORK_PROVIDER;
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -408,10 +421,15 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return null;
+//            return null;
         }
-        location = lms.getLastKnownLocation(bestProvider);*/
-        return location;
+
+
+//        Location location = lms.getLastKnownLocation(bestProvider);
+        lms.requestLocationUpdates(networkProvider, 1000, 10 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 10 ,locationListener);
+
+//        return location;
     }
 
     @Override
@@ -433,8 +451,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         owner.setText(ownerName);
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
-
-        Address address = updateForCurrentLocation();
 
         if(address!=null){
             Locale locale = address.getLocale();
@@ -505,4 +521,73 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private void updateItemInDB(){
         // save item back to db
     }
+
+    //update
+    private void updateItemList(String tripId, Item modifyItem) {
+        Map<String, Object> itemValues = modifyItem.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/buylist-items/" + tripId, itemValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    private void updateCurrency2USD(Rates rates) {
+        Map<String, Object> rateValues = rates.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/rates", rateValues);
+
+        mDatabase.updateChildren(childUpdates);
+
+    }
+
+    public LocationListener locationListener = new LocationListener()
+    {
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            if(location != null)
+                address = updateForCurrentLocation(location);
+        }
+        @Override
+        public void onProviderDisabled(String provider){
+
+        }
+        @Override
+        public void onProviderEnabled(String provider){
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras){
+
+        }
+    };
+
+//    public LocationListener networklocationListener = new LocationListener()
+//    {
+//
+//        @Override
+//        public void onLocationChanged(Location location)
+//        {
+//            if(location != null)
+//                address = updateForCurrentLocation(location);
+//        }
+//        @Override
+//        public void onProviderDisabled(String provider){
+//
+//        }
+//        @Override
+//        public void onProviderEnabled(String provider){
+//
+//        }
+//
+//        @Override
+//        public void onStatusChanged(String provider, int status, Bundle extras){
+//
+//        }
+//    };
+
+
+
 }
