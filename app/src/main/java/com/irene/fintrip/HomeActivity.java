@@ -261,6 +261,7 @@ public class HomeActivity extends AppCompatActivity {
 
             Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
             i.putExtra("item", Parcels.wrap(item));
+            i.putExtra("tripId", tripID);
             startActivity(i);
 
         }
