@@ -10,8 +10,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -126,8 +128,15 @@ public class HomeActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), DetailsActivity.class);
                 i.putExtra("item", Parcels.wrap(items.get(position)));
                 i.putExtra("tripId", tripID);
+                i.putExtra("transitionName", ViewCompat.getTransitionName(v.findViewById(R.id.ivProduct)));
 
-                startActivity(i);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        HomeActivity.this,
+                        v.findViewById(R.id.ivProduct),
+                        ViewCompat.getTransitionName(v.findViewById(R.id.ivProduct)));
+
+                startActivity(i, options.toBundle());
+                //startActivity(i);
             }
         });
 
