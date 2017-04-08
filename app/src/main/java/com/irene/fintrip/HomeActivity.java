@@ -74,6 +74,8 @@ public class HomeActivity extends AppCompatActivity {
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
         Bundle extras = getIntent().getExtras();
         tvToolbar.setText("- "+extras.getString("tripName"));
@@ -91,7 +93,7 @@ public class HomeActivity extends AppCompatActivity {
             } else {
 
                 ActivityCompat.requestPermissions(HomeActivity.this,
-                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         }

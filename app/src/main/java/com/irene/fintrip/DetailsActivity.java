@@ -110,6 +110,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDatabase = DatabaseUtil.getDatabase().getReference();
 

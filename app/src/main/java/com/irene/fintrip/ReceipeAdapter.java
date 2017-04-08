@@ -1,6 +1,8 @@
 package com.irene.fintrip;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +94,35 @@ public class ReceipeAdapter extends RecyclerView.Adapter<ReceipeAdapter.ViewHold
         tvTotalPrice.setText(item.getTargetCurrency()+" "+item.getTotalPrice().toString());
 
         final ImageView ivTotalPaid = viewHolder.ivTotalPaid;
+        ivTotalPaid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Already got your money?")
+                        .setPositiveButton("YES",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        for(int i = 0; i < item.getItemID().size();i++){
+                                            if(mContext instanceof ChargeActivity)
+                                                ((ChargeActivity)mContext).updateIsPaid(((ChargeActivity)mContext).getTripID(),item.getItemID().get(i),true);
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("NO",
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        // TODO Auto-generated method stub
+
+                                    }
+                                }).show();
+            }
+        });
 
     }
 
