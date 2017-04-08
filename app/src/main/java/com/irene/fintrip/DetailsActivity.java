@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
@@ -58,6 +60,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
+import static com.irene.fintrip.R.id.location;
 
 public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
     String mCurrentPhotoPath;
@@ -80,7 +83,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private RelativeLayout rlTargetCurrency;
     private RelativeLayout rlTargetPrice;
     private String baseCurrency;
-    private String[] currency = {"JPY", "KRW", "CNY"};
+    private String[] currency = {"JPY", "USD"};
     private Double itemPrice;
     private Address address;
     private LocationManager lms;
@@ -140,7 +143,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
-        tvLocation = (TextView) findViewById(R.id.location);
+        tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(R.id.tPrice);
         etPrice = (TextView) findViewById(R.id.price);
@@ -157,7 +160,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         tripID = getIntent().getExtras().getString("tripId");
 
         // Required item
-        if(item.getImageUrl()!=""){
+        if(item.getImageUrl()!= null && !item.getImageUrl().equals("")){
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
@@ -167,15 +170,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         }
 
         // optional
-        if(item.getOwner()!="")
+        if(item.getOwner()!=null && !item.getOwner().equals(""))
             owner.setText(item.getOwner());
         else
             owner.setVisibility(View.GONE);
 
-
         if(item.getPrice()!=0.0){
             itemPrice = item.getPrice();
             etPrice.setText(item.getPrice().toString());
+            priceCurrency.setText(item.getPriceCurrency());
+            tvLocation.setText(item.getLocation());
+
+            prepareCurrencyExchangeSection(item.getPriceCurrency());
         }
         else{
             // hide price editText, location and section below
@@ -187,7 +193,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             rlTargetCurrency.setVisibility(View.INVISIBLE);
         }
 
-        if(item.getPriceTagImageUrl()!="")
+        if(item.getPriceTagImageUrl()!=null && !item.getPriceTagImageUrl().equals(""))
         {
             detailsPic.setVisibility(View.VISIBLE);
             Glide.with(getBaseContext())
@@ -196,6 +202,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     .centerCrop()
                     //.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(detailsPic);
+        }
+        else{
+            detailsPic.setVisibility(View.GONE);
+        }
+
+        if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
+            setSpinnerToValue(spinner, item.getTargetCurrency());
         }
 
         ImageView priceTagImageCamera = (ImageView) findViewById(R.id.pic);
@@ -207,6 +220,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             }
         });
 
+    }
+
+    public void setSpinnerToValue(Spinner spinner, String value) {
+        int index = 0;
+        SpinnerAdapter adapter = spinner.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).equals(value)) {
+                index = i;
+                break; // terminate loop
+            }
+        }
+        spinner.setSelection(index);
     }
 
     private void prepareCurrencyExchangeSection(String baseCurrency){
@@ -222,8 +247,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         call.enqueue(new Callback<CurrencyExchange>() {
             @Override
             public void onResponse(Call<CurrencyExchange> call, Response<CurrencyExchange> response) {
+
                 int statusCode = response.code();
-                rates = response.body().getRates();
+                Log.d("DEBUG:statusCode",String.valueOf(statusCode));
+                if(statusCode == 422){
+                    rates = new Rates();
+                    //rates.setNTD(30.0);
+                    rates.setJPY(3.58);
+                    rates.setUSD(0.0324);
+                }
+                else{
+                    rates = response.body().getRates();
+                }
 
                 // TODO:get supported currency exchange rate for dropdown from api
                 //final String[] currency = {"JPY", "KRW", "CNY"};
@@ -236,8 +271,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         // update target price
-                        Double tPrice = itemPrice * rates.get(currency[position]);
+                        Double tPrice = item.getPrice() * rates.get(currency[position]);
+                        DecimalFormat df = new DecimalFormat("##.00");
+                        tPrice = Double.parseDouble(df.format(tPrice));
                         tvTargetPrice.setText(tPrice.toString());
+
+                        item.setTargetCurrency(currency[position]);
+                        updateItemInDB();
                     }
 
                     @Override
@@ -245,6 +285,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
                     }
                 });
+
+                if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
+                    Double tPrice = item.getPrice() * rates.get(item.getTargetCurrency());
+                    DecimalFormat df = new DecimalFormat("##.00");
+                    tPrice = Double.parseDouble(df.format(tPrice));
+                    tvTargetPrice.setText(tPrice.toString());
+                }
             }
 
             @Override
@@ -341,7 +388,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         //Log.d("Default Fraction Digits: ", currency.getDefaultFractionDigits());
     }
 
-
     private Address updateForCurrentLocation(Location location) {
 
         if(location==null)
@@ -349,6 +395,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
+        Log.d("DEBUG:location",String.valueOf(latitude) + "," + String.valueOf(longitude));
         // Helper.log(TAG, "latitude: " +latitude);
         List<Address> addresses = null;
         Geocoder gcd = new Geocoder(getBaseContext());
@@ -426,8 +473,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
 
 //        Location location = lms.getLastKnownLocation(bestProvider);
-        lms.requestLocationUpdates(networkProvider, 1000, 10 ,locationListener);
-        lms.requestLocationUpdates(gpsProvider, 1000, 10 ,locationListener);
+        lms.requestLocationUpdates(networkProvider, 1000, 1000 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 1000 ,locationListener);
 
 //        return location;
     }
@@ -442,16 +489,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     public void onEditAction(MenuItem mi) {
         // open dialog
         FragmentManager fm = getSupportFragmentManager();
-        EditItemFragment editNameDialogFragment = EditItemFragment.newInstance();
+        EditItemFragment editNameDialogFragment = EditItemFragment.newInstance(item.getOwner(),item.getPrice());
         editNameDialogFragment.show(fm, "fragment_edit_item");
     }
 
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
         owner.setText(ownerName);
+        item.setOwner(ownerName);
+
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
-
+        item.setPrice(itemPrice);
         if(address!=null){
             Locale locale = address.getLocale();
 
@@ -520,13 +569,14 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private void updateItemInDB(){
         // save item back to db
+        updateItemList(tripID,item);
     }
 
     //update
     private void updateItemList(String tripId, Item modifyItem) {
         Map<String, Object> itemValues = modifyItem.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/buylist-items/" + tripId, itemValues);
+        childUpdates.put("/buylist-items/" + tripId+"/"+modifyItem.getItemId(), itemValues);
 
         mDatabase.updateChildren(childUpdates);
     }

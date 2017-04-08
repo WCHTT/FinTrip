@@ -28,10 +28,11 @@ public class EditItemFragment   extends DialogFragment {
         // Use `newInstance` instead as shown below
     }
 
-    public static EditItemFragment newInstance() {
+    public static EditItemFragment newInstance(String owner, Double price) {
         EditItemFragment frag = new EditItemFragment();
         Bundle args = new Bundle();
-        //args.putString("title", title);
+        args.putString("owner", owner);
+        args.putDouble("price", price);
         frag.setArguments(args);
         return frag;
     }
@@ -50,8 +51,10 @@ public class EditItemFragment   extends DialogFragment {
         etPrice = (EditText) view.findViewById(R.id.etPrice);
         Button btn = (Button) view.findViewById(R.id.btnEdit);
 
-        // TODO: Load data from arguments
-        Double itemPrice = 100.0;
+        String owner = getArguments().getString("owner","");
+        etBuyer.setText(owner);
+
+        Double itemPrice = getArguments().getDouble("price",0);
         etPrice.setText(itemPrice.toString());
         etPrice.setRawInputType(Configuration.KEYBOARD_12KEY);
 

@@ -106,6 +106,18 @@ public class Rates {
     @SerializedName("EUR")
     @Expose
     private Double eUR;
+
+    public Double getNTD() {
+        return NTD;
+    }
+
+    public void setNTD(Double NTD) {
+        this.NTD = NTD;
+    }
+
+    private Double NTD;
+    private Double uSD;
+
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @Exclude
@@ -376,7 +388,7 @@ public class Rates {
         this.tRY = tRY;
     }
 
-    /*
+
     public Double getUSD() {
         return uSD;
     }
@@ -384,7 +396,7 @@ public class Rates {
     public void setUSD(Double uSD) {
         this.uSD = uSD;
     }
-    */
+
     public Double getZAR() {
         return zAR;
     }
@@ -410,8 +422,10 @@ public class Rates {
                 return getKRW();
             case "CNY":
                 return getCNY();
+            case "USD":
+                return getUSD();
             default:
-                return getJPY();
+                return getUSD();
         }
     }
 
