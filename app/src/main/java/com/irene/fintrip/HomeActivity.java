@@ -78,6 +78,8 @@ public class HomeActivity extends AppCompatActivity {
         tvToolbar.setText("- "+extras.getString("tripName"));
         tripID = extras.getString("tripId");
 
+        Log.d("DEBUG:tripID",tripID);
+
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
                 Manifest.permission.CAMERA)
@@ -127,6 +129,14 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        ItemClickSupport.addTo(rvToBuyItem).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                deleteItem(tripID,items.get(position).getItemId());
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -138,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onChargeAction(MenuItem mi) {
         Intent i = new Intent(getApplicationContext(),ChargeActivity.class);
+        i.putExtra("tripID",tripID);
         startActivity(i);
     }
 
@@ -242,12 +253,16 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-            Item item = new Item(true,imageURI.toString(),"IRENE",100.0);
-            Log.e("DEBUG",tripID);
-            Log.e("DEBUG", imageURI.toString());
-            writeItemList(tripID,false,imageURI.toString(),"IRENE",100.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
-            items.add(0,item);
-            itemAdapter.notifyItemInserted(0);
+
+            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
+            writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+//            items.add(0,item);
+//            itemAdapter.notifyItemInserted(0);
+
+            Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+            i.putExtra("item", Parcels.wrap(item));
+            startActivity(i);
+
         }
     }
 
@@ -323,19 +338,23 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    //delete
+    private void deleteItem(String tripId, String itemId) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
+    }
+
     //update
-    private void updateIsBuy(String tripId, String itemId, boolean isBuy) {
+    public void updateIsBuy(String tripId, String itemId, boolean isBuy) {
         mDatabase.child("buylist-items").child(tripId).child(itemId).child("isBuy").setValue(isBuy);
     }
 
     //update
-    private void updateIsPaid(String tripId, String itemId, boolean isPaid) {
+    public void updateIsPaid(String tripId, String itemId, boolean isPaid) {
         mDatabase.child("buylist-items").child(tripId).child(itemId).child("isPaid").setValue(isPaid);
     }
 
-    //delete
-    private void deleteItem(String tripId, String itemId) {
-        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
+    public String getTripID(){
+        return tripID;
     }
 
 }
