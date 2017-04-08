@@ -88,25 +88,33 @@ public class ChargeActivity extends AppCompatActivity {
                     Log.e("DEBUG:owner", String.valueOf(itemValues.get("owner")));
                     Log.e("DEBUG:isPaid", String.valueOf(itemValues.get("isPaid")));
 
-
-                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
+                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid")){
                         if(ownerMap.get(itemValues.get("owner")) == null){
                             HashMap<String, Double> currencyMap = new HashMap<String, Double>();
-//                            HashMap<String, Object> currencyMap = new HashMap<String, Object>();
-//                            currencyMap.put((String)itemValues.get("itemId"),itemValues);
                             currencyMap.put((String)itemValues.get("targetCurrency"),((Number)itemValues.get("price")).doubleValue());
                             ownerMap.put((String)itemValues.get("owner"),currencyMap);
                         }
                         else {
-                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("itemId")) == null) {
-//                                ownerMap.get(itemValues.get("owner")).put((String)itemValues.get("itemId"),itemValues);
+                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) == null) {
                                 ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ((Number) itemValues.get("price")).doubleValue());
-                            }
-                            else {
+                            } else {
                                 ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) + ((Number) itemValues.get("price")).doubleValue());
                             }
                         }
                     }
+
+
+//                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
+//                        if(ownerMap.get(itemValues.get("owner")) == null){
+//                            HashMap<String, Object> currencyMap = new HashMap<String, Object>();
+//                            currencyMap.put((String)itemValues.get("itemId"),itemValues);
+//                            ownerMap.put((String)itemValues.get("owner"),currencyMap);
+//                        }
+//                        else {
+//                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("itemId")) == null) {
+//                                ownerMap.get(itemValues.get("owner")).put((String)itemValues.get("itemId"),itemValues);
+//                        }
+//                    }
 
 
                 }
@@ -116,6 +124,15 @@ public class ChargeActivity extends AppCompatActivity {
                         receipes.add(receipe);
                     }
                 }
+//                for(String key : ownerMap.keySet() ){
+//                    for(String innerkey: ownerMap.get(key).keySet()){
+//                        List<String> ListItemID;
+//                        Double totalPrice;
+//
+//                        Receipe receipe = new Receipe (key,ownerMap.get(key).get(innerkey),innerkey);
+//                        receipes.add(receipe);
+//                    }
+//                }
                 receipeAdapter.notifyDataSetChanged();
             }
 

@@ -473,8 +473,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
 
 //        Location location = lms.getLastKnownLocation(bestProvider);
-        lms.requestLocationUpdates(networkProvider, 1000, 0 ,locationListener);
-        lms.requestLocationUpdates(gpsProvider, 1000, 0 ,locationListener);
+        lms.requestLocationUpdates(networkProvider, 1000, 1000 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 1000 ,locationListener);
 
 //        return location;
     }
