@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -78,6 +79,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private Item item;
     private String tripID;
+    private String tripName;
     private TextView owner;
     private TextView etPrice;
     private TextView tvLocation;
@@ -161,14 +163,20 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         item =  (Item) Parcels.unwrap(getIntent().getParcelableExtra("item"));
         tripID = getIntent().getExtras().getString("tripId");
+        tripName = getIntent().getExtras().getString("tripName");
+
+
+        TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
+        tvToolbar.setText(tripName);
 
         // Required item
         if(item.getImageUrl()!= null && !item.getImageUrl().equals("")){
+            Log.e("DEBUG", item.getImageUrl());
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
-                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivItemImage);
         }
         // optional
