@@ -60,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     FloatingActionButton fabCreate;
     List<Item> items;
     String tripID;
+    String tripName;
     String key;  //itemID for new item
 
     private DatabaseReference mDatabase;
@@ -80,7 +81,8 @@ public class HomeActivity extends AppCompatActivity {
 
         TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
         Bundle extras = getIntent().getExtras();
-        tvToolbar.setText("- "+extras.getString("tripName"));
+        tripName = extras.getString("tripName");
+        tvToolbar.setText(tripName);
         tripID = extras.getString("tripId");
 
         Log.d("DEBUG:tripID",tripID);
@@ -129,6 +131,7 @@ public class HomeActivity extends AppCompatActivity {
                 // do it
                 Intent i = new Intent(getApplicationContext(), DetailsActivity.class);
                 i.putExtra("item", Parcels.wrap(items.get(position)));
+                i.putExtra("tripName", tripName);
                 i.putExtra("tripId", tripID);
                 i.putExtra("transitionName", ViewCompat.getTransitionName(v.findViewById(R.id.ivProduct)));
 

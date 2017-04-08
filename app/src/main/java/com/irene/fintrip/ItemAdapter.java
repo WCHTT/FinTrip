@@ -156,7 +156,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         tvOwner.setText(item.getOwner());
 
         TextView tvPrice = viewHolder.tvPrice;
-        tvPrice.setText(item.getPrice().toString());
+        tvPrice.setText("Price: "+item.getPrice().toString());
 
     }
 
