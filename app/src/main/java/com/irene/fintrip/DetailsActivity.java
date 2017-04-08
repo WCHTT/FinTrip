@@ -87,6 +87,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private TextView etPrice;
     private TextView tvLocation;
     private TextView priceCurrency;
+    private TextView buyerLabel;
     private ImageView ivItemImage;
     FloatingActionButton fabCreate;
 
@@ -155,7 +156,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
-        TextView buyerLabel = (TextView) findViewById(R.id.buyerLabel);
+        buyerLabel = (TextView) findViewById(R.id.buyerLabel);
         tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(tPrice);
@@ -583,6 +584,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
         owner.setText(ownerName);
+        buyerLabel.setVisibility(View.VISIBLE);
         item.setOwner(ownerName);
 
         etPrice.setText(price);
