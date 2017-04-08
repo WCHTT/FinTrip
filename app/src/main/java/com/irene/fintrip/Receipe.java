@@ -15,12 +15,10 @@ public class Receipe {
         this.itemID = itemID;
     }
 
-    public Receipe(String owner, Double totalPrice, String targetCurrency) {
-        this.owner = owner;
+    public Receipe(Double totalPrice, List<String> itemID) {
         this.totalPrice = totalPrice;
-        this.targetCurrency = targetCurrency;
+        this.itemID = itemID;
     }
-
 
     public String getOwner() {
         return owner;
