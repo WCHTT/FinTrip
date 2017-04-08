@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
@@ -81,7 +83,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private RelativeLayout rlTargetCurrency;
     private RelativeLayout rlTargetPrice;
     private String baseCurrency;
-    private String[] currency = {"JPY", "KRW", "CNY"};
+    private String[] currency = {"JPY", "USD"};
     private Double itemPrice;
     private Address address;
     private LocationManager lms;
@@ -173,10 +175,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         else
             owner.setVisibility(View.GONE);
 
-
         if(item.getPrice()!=0.0){
             itemPrice = item.getPrice();
             etPrice.setText(item.getPrice().toString());
+            priceCurrency.setText(item.getPriceCurrency());
+            tvLocation.setText(item.getLocation());
+
+            prepareCurrencyExchangeSection(item.getPriceCurrency());
         }
         else{
             // hide price editText, location and section below
@@ -198,6 +203,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     //.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(detailsPic);
         }
+        else{
+            detailsPic.setVisibility(View.GONE);
+        }
+
+        if(item.getTargetCurrency()!="") {
+            setSpinnerToValue(spinner, item.getTargetCurrency());
+        }
 
         ImageView priceTagImageCamera = (ImageView) findViewById(R.id.pic);
         //
@@ -208,6 +220,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             }
         });
 
+    }
+
+    public void setSpinnerToValue(Spinner spinner, String value) {
+        int index = 0;
+        SpinnerAdapter adapter = spinner.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).equals(value)) {
+                index = i;
+                break; // terminate loop
+            }
+        }
+        spinner.setSelection(index);
     }
 
     private void prepareCurrencyExchangeSection(String baseCurrency){
@@ -224,18 +248,17 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             @Override
             public void onResponse(Call<CurrencyExchange> call, Response<CurrencyExchange> response) {
 
-
                 int statusCode = response.code();
                 Log.d("DEBUG:statusCode",String.valueOf(statusCode));
                 if(statusCode == 422){
                     rates = new Rates();
-                    rates.setNTD(30.0);
+                    //rates.setNTD(30.0);
+                    rates.setJPY(3.58);
+                    rates.setUSD(0.0324);
                 }
                 else{
                     rates = response.body().getRates();
                 }
-
-
 
                 // TODO:get supported currency exchange rate for dropdown from api
                 //final String[] currency = {"JPY", "KRW", "CNY"};
@@ -248,8 +271,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         // update target price
-                        Double tPrice = itemPrice * rates.get(currency[position]);
+                        Double tPrice = item.getPrice() * rates.get(currency[position]);
+                        DecimalFormat df = new DecimalFormat("##.00");
+                        tPrice = Double.parseDouble(df.format(tPrice));
                         tvTargetPrice.setText(tPrice.toString());
+
+                        item.setTargetCurrency(currency[position]);
+                        updateItemInDB();
                     }
 
                     @Override
@@ -257,6 +285,13 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
                     }
                 });
+
+                if(item.getTargetCurrency()!="") {
+                    Double tPrice = item.getPrice() * rates.get(item.getTargetCurrency());
+                    DecimalFormat df = new DecimalFormat("##.00");
+                    tPrice = Double.parseDouble(df.format(tPrice));
+                    tvTargetPrice.setText(tPrice.toString());
+                }
             }
 
             @Override
@@ -353,13 +388,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         //Log.d("Default Fraction Digits: ", currency.getDefaultFractionDigits());
     }
 
-
     private Address updateForCurrentLocation(Location location) {
 
         if(location==null)
             return null;
-
-
 
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
@@ -457,16 +489,18 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     public void onEditAction(MenuItem mi) {
         // open dialog
         FragmentManager fm = getSupportFragmentManager();
-        EditItemFragment editNameDialogFragment = EditItemFragment.newInstance();
+        EditItemFragment editNameDialogFragment = EditItemFragment.newInstance(item.getOwner(),item.getPrice());
         editNameDialogFragment.show(fm, "fragment_edit_item");
     }
 
     @Override
     public void onFinishEditDialog(String ownerName, String price) {
         owner.setText(ownerName);
+        item.setOwner(ownerName);
+
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
-
+        item.setPrice(itemPrice);
         if(address!=null){
             Locale locale = address.getLocale();
 
@@ -535,13 +569,14 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
     private void updateItemInDB(){
         // save item back to db
+        updateItemList(tripID,item);
     }
 
     //update
     private void updateItemList(String tripId, Item modifyItem) {
         Map<String, Object> itemValues = modifyItem.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/buylist-items/" + tripId, itemValues);
+        childUpdates.put("/buylist-items/" + tripId+"/"+modifyItem.getItemId(), itemValues);
 
         mDatabase.updateChildren(childUpdates);
     }
