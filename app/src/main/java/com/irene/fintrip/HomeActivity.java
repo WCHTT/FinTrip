@@ -58,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     FloatingActionButton fabCreate;
     List<Item> items;
     String tripID;
+    String key;  //itemID for new item
 
     private DatabaseReference mDatabase;
 
@@ -253,9 +254,9 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-
-            Item item = new Item(true,imageURI.toString(),"CHAO",0.0);
             writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            Item item = new Item(key,false,imageURI.toString(),"",0.0);
+
 //            items.add(0,item);
 //            itemAdapter.notifyItemInserted(0);
 
@@ -292,7 +293,8 @@ public class HomeActivity extends AppCompatActivity {
     //write
     private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         // Create new item at /user-buylists/$userid/$buylistid and at
-        String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        //String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        key = mDatabase.child("buylist-items").child(tripId).push().getKey();
         Log.e("DEBUG",tripId + " " + key);
         Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
 
