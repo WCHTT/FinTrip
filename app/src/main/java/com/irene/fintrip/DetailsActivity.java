@@ -160,7 +160,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         tripID = getIntent().getExtras().getString("tripId");
 
         // Required item
-        if(item.getImageUrl()!= null && item.getImageUrl()!=""){
+        if(item.getImageUrl()!= null && !item.getImageUrl().equals("")){
             Glide.with(getBaseContext())
                     .load(item.getImageUrl())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
@@ -170,7 +170,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         }
 
         // optional
-        if(item.getOwner()!="")
+        if(item.getOwner()!=null && !item.getOwner().equals(""))
             owner.setText(item.getOwner());
         else
             owner.setVisibility(View.GONE);
@@ -193,7 +193,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             rlTargetCurrency.setVisibility(View.INVISIBLE);
         }
 
-        if(item.getPriceTagImageUrl()!="")
+        if(item.getPriceTagImageUrl()!=null && !item.getPriceTagImageUrl().equals(""))
         {
             detailsPic.setVisibility(View.VISIBLE);
             Glide.with(getBaseContext())
@@ -207,7 +207,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             detailsPic.setVisibility(View.GONE);
         }
 
-        if(item.getTargetCurrency()!="") {
+        if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
             setSpinnerToValue(spinner, item.getTargetCurrency());
         }
 
@@ -286,7 +286,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     }
                 });
 
-                if(item.getTargetCurrency()!="") {
+                if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
                     Double tPrice = item.getPrice() * rates.get(item.getTargetCurrency());
                     DecimalFormat df = new DecimalFormat("##.00");
                     tPrice = Double.parseDouble(df.format(tPrice));
@@ -473,8 +473,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
 
 //        Location location = lms.getLastKnownLocation(bestProvider);
-        lms.requestLocationUpdates(networkProvider, 1000, 0 ,locationListener);
-        lms.requestLocationUpdates(gpsProvider, 1000, 0 ,locationListener);
+        lms.requestLocationUpdates(networkProvider, 1000, 1000 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 1000 ,locationListener);
 
 //        return location;
     }
