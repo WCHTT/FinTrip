@@ -153,6 +153,7 @@ public class Rates {
         result.put("THB", tHB);
         result.put("TRY", tRY);
         result.put("ZAR", zAR);
+        result.put("USD", uSD);
         return result;
     }
 
@@ -411,6 +412,13 @@ public class Rates {
 
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    public Rates(){}
+
+    public Rates(Double JPY, Double USD){
+        jPY = JPY;
+        uSD = USD;
     }
 
     // TODO: 3/19/2017
