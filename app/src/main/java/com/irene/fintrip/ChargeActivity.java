@@ -27,6 +27,7 @@ public class ChargeActivity extends AppCompatActivity {
 
     ReceipeAdapter receipeAdapter;
     RecyclerView rvOwnerReceipe;
+    TextView tvNoItem;
     List<Receipe> receipes;
 
     @Override
@@ -54,6 +55,7 @@ public class ChargeActivity extends AppCompatActivity {
 
     private void setupView() {
         rvOwnerReceipe = (RecyclerView) findViewById(R.id.rvCharge);
+        tvNoItem = (TextView) findViewById(R.id.tvNoItem);
         // Initialize contacts
         receipes = new ArrayList<>();
 
@@ -78,8 +80,8 @@ public class ChargeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-//                HashMap<String, HashMap<String, Object>> ownerMap = new HashMap<String, HashMap<String,Object>>();
-                HashMap<String, HashMap<String, Double>> ownerMap = new HashMap<String, HashMap<String,Double>>();
+                HashMap<String, HashMap<String, Receipe>> ownerMap = new HashMap<String, HashMap<String,Receipe>>();
+//                HashMap<String, HashMap<String, Double>> ownerMap = new HashMap<String, HashMap<String,Double>>();
 
                 for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
@@ -88,52 +90,79 @@ public class ChargeActivity extends AppCompatActivity {
                     Log.e("DEBUG:owner", String.valueOf(itemValues.get("owner")));
                     Log.e("DEBUG:isPaid", String.valueOf(itemValues.get("isPaid")));
 
-                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid")){
-                        if(ownerMap.get(itemValues.get("owner")) == null){
-                            HashMap<String, Double> currencyMap = new HashMap<String, Double>();
-                            currencyMap.put((String)itemValues.get("targetCurrency"),((Number)itemValues.get("price")).doubleValue());
-                            ownerMap.put((String)itemValues.get("owner"),currencyMap);
+//                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid")){
+//                        if(ownerMap.get(itemValues.get("owner")) == null){
+//                            HashMap<String, Double> currencyMap = new HashMap<String, Double>();
+//                            currencyMap.put((String)itemValues.get("targetCurrency"),((Number)itemValues.get("price")).doubleValue());
+//                            ownerMap.put((String)itemValues.get("owner"),currencyMap);
+//                        }
+//                        else {
+//                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) == null) {
+//                                ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ((Number) itemValues.get("price")).doubleValue());
+//                            } else {
+//                                ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) + ((Number) itemValues.get("price")).doubleValue());
+//                            }
+//                        }
+//                    }
+
+
+                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
+
+                        String owner = (String)itemValues.get("owner");
+                        owner = owner.toUpperCase();
+
+                        if(ownerMap.get(owner) == null){
+
+                            HashMap<String, Receipe> currencyMap = new HashMap<String, Receipe>();
+                            List<String> ListItemID = new ArrayList<String>();
+                            ListItemID.add((String) itemValues.get("itemId"));
+                            Receipe receipe = new Receipe(((Number)itemValues.get("price")).doubleValue(),ListItemID);
+
+                            currencyMap.put((String)itemValues.get("targetCurrency"),receipe);
+                            ownerMap.put(owner,currencyMap);
                         }
                         else {
-                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) == null) {
-                                ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ((Number) itemValues.get("price")).doubleValue());
-                            } else {
-                                ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) + ((Number) itemValues.get("price")).doubleValue());
+                            if (ownerMap.get(owner).get(itemValues.get("targetCurrency")) == null) {
+                                List<String> ListItemID = new ArrayList<String>();
+                                ListItemID.add((String) itemValues.get("itemId"));
+                                Receipe receipe = new Receipe(((Number)itemValues.get("price")).doubleValue(),ListItemID);
+                                ownerMap.get(owner).put((String) itemValues.get("targetCurrency"), receipe);
+                            }
+                            else {
+                                Double priceUpdate;
+                                List<String> ListItemID = new ArrayList<String>();
+                                priceUpdate = ((Number)itemValues.get("price")).doubleValue() + ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")).getTotalPrice();
+                                ListItemID = ownerMap.get(owner).get(itemValues.get("targetCurrency")).getItemID();
+                                ListItemID.add((String)itemValues.get("itemId"));
+                                Receipe receipe = new Receipe(priceUpdate,ListItemID);
+                                ownerMap.get(owner).put((String) itemValues.get("targetCurrency"),receipe);
                             }
                         }
                     }
 
-
-//                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
-//                        if(ownerMap.get(itemValues.get("owner")) == null){
-//                            HashMap<String, Object> currencyMap = new HashMap<String, Object>();
-//                            currencyMap.put((String)itemValues.get("itemId"),itemValues);
-//                            ownerMap.put((String)itemValues.get("owner"),currencyMap);
-//                        }
-//                        else {
-//                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("itemId")) == null) {
-//                                ownerMap.get(itemValues.get("owner")).put((String)itemValues.get("itemId"),itemValues);
-//                        }
-//                    }
-
-
-                }
-                for(String key : ownerMap.keySet() ){
-                    for(String innerkey: ownerMap.get(key).keySet()){
-                        Receipe receipe = new Receipe (key,ownerMap.get(key).get(innerkey),innerkey);
-                        receipes.add(receipe);
-                    }
                 }
 //                for(String key : ownerMap.keySet() ){
 //                    for(String innerkey: ownerMap.get(key).keySet()){
-//                        List<String> ListItemID;
-//                        Double totalPrice;
-//
 //                        Receipe receipe = new Receipe (key,ownerMap.get(key).get(innerkey),innerkey);
 //                        receipes.add(receipe);
 //                    }
 //                }
+
+                receipes.clear();
+                for(String key : ownerMap.keySet() ){
+                    for(String innerkey: ownerMap.get(key).keySet()){
+                        Receipe receipe = new Receipe (key,ownerMap.get(key).get(innerkey).getTotalPrice(),innerkey,ownerMap.get(key).get(innerkey).getItemID());
+                        Log.d("DEBUG:innerKEY",innerkey);
+                        receipes.add(receipe);
+                    }
+                }
                 receipeAdapter.notifyDataSetChanged();
+
+                Log.d("DEBUG:receipe",String.valueOf(receipes.size()));
+
+                if(receipes.size() == 0){
+                    tvNoItem.setText("NO UNPAID ITEM");
+                }
             }
 
             @Override
@@ -153,4 +182,5 @@ public class ChargeActivity extends AppCompatActivity {
     public String getTripID(){
         return tripID;
     }
+
 }

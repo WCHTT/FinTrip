@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.irene.fintrip.R;
 
 import static com.irene.fintrip.R.id.detailsPic;
@@ -51,7 +52,7 @@ public class DisplayPictureFragment extends DialogFragment {
         Glide.with(getContext())
                 .load(imageUrl)
                 //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
-                //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(ivDetailsPic);
 
         ImageView btn = (ImageView) view.findViewById(R.id.close);
