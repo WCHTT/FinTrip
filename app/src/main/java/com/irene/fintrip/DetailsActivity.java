@@ -152,6 +152,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
+        TextView buyerLabel = (TextView) findViewById(R.id.buyerLabel);
         tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(tPrice);
@@ -197,7 +198,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         if(item.getOwner()!=null && !item.getOwner().equals(""))
             owner.setText(item.getOwner());
         else
+        {
+            buyerLabel.setVisibility(View.GONE);
             owner.setVisibility(View.GONE);
+        }
 
         if(item.getPrice()!=0.0){
             itemPrice = item.getPrice();
