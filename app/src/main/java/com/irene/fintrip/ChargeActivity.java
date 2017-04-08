@@ -78,10 +78,8 @@ public class ChargeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+//                HashMap<String, HashMap<String, Object>> ownerMap = new HashMap<String, HashMap<String,Object>>();
                 HashMap<String, HashMap<String, Double>> ownerMap = new HashMap<String, HashMap<String,Double>>();
-//                HashMap<String, Double> currencyMap = new HashMap<String, Double>();
-
-                //HashMap<String, Double> result = new HashMap<>();
 
                 for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
@@ -90,16 +88,21 @@ public class ChargeActivity extends AppCompatActivity {
                     Log.e("DEBUG:owner", String.valueOf(itemValues.get("owner")));
                     Log.e("DEBUG:isPaid", String.valueOf(itemValues.get("isPaid")));
 
-                    if(!(Boolean)itemValues.get("isPaid")){
+
+                    if((Boolean)itemValues.get("isBuy") && !(Boolean)itemValues.get("isPaid") ){
                         if(ownerMap.get(itemValues.get("owner")) == null){
                             HashMap<String, Double> currencyMap = new HashMap<String, Double>();
+//                            HashMap<String, Object> currencyMap = new HashMap<String, Object>();
+//                            currencyMap.put((String)itemValues.get("itemId"),itemValues);
                             currencyMap.put((String)itemValues.get("targetCurrency"),((Number)itemValues.get("price")).doubleValue());
                             ownerMap.put((String)itemValues.get("owner"),currencyMap);
                         }
                         else {
-                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) == null) {
+                            if (ownerMap.get(itemValues.get("owner")).get(itemValues.get("itemId")) == null) {
+//                                ownerMap.get(itemValues.get("owner")).put((String)itemValues.get("itemId"),itemValues);
                                 ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ((Number) itemValues.get("price")).doubleValue());
-                            } else {
+                            }
+                            else {
                                 ownerMap.get(itemValues.get("owner")).put((String) itemValues.get("targetCurrency"), ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")) + ((Number) itemValues.get("price")).doubleValue());
                             }
                         }
