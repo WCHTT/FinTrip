@@ -17,7 +17,8 @@ public class Item {
     public Item() {
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, Double price) {
+    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price) {
+        this.itemId = itemId;
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
