@@ -66,6 +66,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
 import static com.irene.fintrip.R.id.location;
+import static com.irene.fintrip.R.id.tPrice;
 
 public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
     String mCurrentPhotoPath;
@@ -150,7 +151,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
-        tvTargetPrice = (TextView) findViewById(R.id.tPrice);
+        tvTargetPrice = (TextView) findViewById(tPrice);
         etPrice = (TextView) findViewById(R.id.price);
         priceCurrency = (TextView) findViewById(R.id.priceCurrency);
         ivItemImage = (ImageView) findViewById(R.id.ivItemImage);
@@ -213,6 +214,10 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
             setSpinnerToValue(spinner, item.getTargetCurrency());
+        }
+
+        if(item.getTargetPrice()!=null && item.getTargetPrice()!=0.0) {
+           tvTargetPrice.setText(item.getTargetPrice().toString());
         }
 
         ImageView priceTagImageCamera = (ImageView) findViewById(R.id.pic);
@@ -318,6 +323,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 tvTargetPrice.setText(tPrice.toString());
 
                 item.setTargetCurrency(currency[position]);
+                item.setTargetPrice(tPrice);
                 updateItemInDB();
             }
 
@@ -326,13 +332,6 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
             }
         });
-
-        if(item.getTargetCurrency()!=null && !item.getTargetCurrency().equals("")) {
-            Double tPrice = item.getPrice() * rates.get(item.getTargetCurrency());
-            DecimalFormat df = new DecimalFormat("##.00");
-            tPrice = Double.parseDouble(df.format(tPrice));
-            tvTargetPrice.setText(tPrice.toString());
-        }
     }
 
     private void dispatchTakePictureIntent() {

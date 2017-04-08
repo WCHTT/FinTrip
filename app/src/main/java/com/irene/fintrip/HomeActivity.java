@@ -255,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
 
             Date createTime = new Date();
 
-            writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",false,sdf.format(createTime),(-1)* createTime.getTime());
+            writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",0.0,false,sdf.format(createTime),(-1)* createTime.getTime());
             Item item = new Item(key,false,imageURI.toString(),"",0.0);
 
 //            items.add(0,item);
@@ -292,12 +292,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     //write
-    private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+    private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency,Double targetPrice, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         // Create new item at /user-buylists/$userid/$buylistid and at
         //String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
         key = mDatabase.child("buylist-items").child(tripId).push().getKey();
         Log.e("DEBUG",tripId + " " + key);
-        Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
+        Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,targetPrice,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
 
         Map<String, Object> itemValues = item.toMap();
 
@@ -323,7 +323,11 @@ public class HomeActivity extends AppCompatActivity {
                         // TODO: handle the post
                         Map<String, Object> itemValues = (Map<String, Object>) itemSnapshot.getValue();
                         Log.e("DEBUG", String.valueOf(itemValues.get("price")));
-                        Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
+                        Double targetPrice = 0.0;
+                        if(itemValues.get("targetPrice")!= null){
+                            targetPrice=((Number)itemValues.get("targetPrice")).doubleValue();
+                        }
+                        Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),targetPrice,(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
                         Log.e("DEBUG", String.valueOf(item.getOwner()));
                         items.add(item);
 

@@ -25,7 +25,7 @@ public class Item {
         this.price = price;
     }
 
-    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency,Double targetPrice, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
         this.itemId = itemId;
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
@@ -34,6 +34,7 @@ public class Item {
         this.location = location;
         this.priceTagImageUrl = priceTagImageUrl;
         this.targetCurrency = targetCurrency;
+        this.targetPrice = targetPrice;
         this.priceCurrency = priceCurrency;
         this.isPaid = isPaid;
         this.createdTime = createdTime;
@@ -48,6 +49,7 @@ public class Item {
         result.put("imageUrl", imageUrl);
         result.put("owner", owner);
         result.put("price",price);
+        result.put("targetPrice",targetPrice);
         result.put("location", location);
         result.put("priceTagImageUrl", priceTagImageUrl);
         result.put("targetCurrency", targetCurrency);
@@ -157,11 +159,21 @@ public class Item {
         this.itemId = itemId;
     }
 
+    public void setTargetPrice(Double targetPrice) {
+        this.targetPrice = targetPrice;
+    }
+
+    public Double getTargetPrice() {
+
+        return targetPrice;
+    }
+
     String itemId;
     boolean isBuy;
     String imageUrl;
     String owner;
     Double price;
+    Double targetPrice;
     String location;
     String priceTagImageUrl;
     String targetCurrency;
