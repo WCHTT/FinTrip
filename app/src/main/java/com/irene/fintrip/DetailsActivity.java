@@ -58,6 +58,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.irene.fintrip.HomeActivity.SELECT_PICTURE;
+import static com.irene.fintrip.R.id.location;
 
 public class DetailsActivity extends AppCompatActivity  implements EditItemFragment.EditItemDialogListener {
     String mCurrentPhotoPath;
@@ -140,7 +141,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                 currency);
         spinner.setAdapter(currencyList);
 
-        tvLocation = (TextView) findViewById(R.id.location);
+        tvLocation = (TextView) findViewById(location);
         owner = (TextView) findViewById(R.id.buyerName);
         tvTargetPrice = (TextView) findViewById(R.id.tPrice);
         etPrice = (TextView) findViewById(R.id.price);
@@ -357,7 +358,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
         if(location==null)
             return null;
-        }
+
 
 
         final float latitude = (float) location.getLatitude();
@@ -440,8 +441,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
 
 //        Location location = lms.getLastKnownLocation(bestProvider);
-        lms.requestLocationUpdates(networkProvider, 1000, 10 ,locationListener);
-        lms.requestLocationUpdates(gpsProvider, 1000, 10 ,locationListener);
+        lms.requestLocationUpdates(networkProvider, 1000, 0 ,locationListener);
+        lms.requestLocationUpdates(gpsProvider, 1000, 0 ,locationListener);
 
 //        return location;
     }
