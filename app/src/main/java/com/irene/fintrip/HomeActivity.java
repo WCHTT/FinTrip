@@ -10,15 +10,26 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.irene.fintrip.Utils.DatabaseUtil;
 
 import org.parceler.Parcels;
 
@@ -27,7 +38,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -39,25 +52,40 @@ public class HomeActivity extends AppCompatActivity {
     public static final int REQUEST_TAKE_PHOTO = 2;
     public static final int  MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public final static int PICK_PHOTO_CODE = 1046;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+
 
     ItemAdapter itemAdapter;
     RecyclerView rvToBuyItem;
     FloatingActionButton fabCreate;
     List<Item> items;
+    String tripID;
+    String tripName;
+    String key;  //itemID for new item
+
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        mDatabase = DatabaseUtil.getDatabase().getReference();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.homeToolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         TextView tvToolbar = (TextView) findViewById(R.id.tvToolbar);
         Bundle extras = getIntent().getExtras();
-        tvToolbar.setText("- "+extras.getString("tripName"));
+        tripName = extras.getString("tripName");
+        tvToolbar.setText(tripName);
+        tripID = extras.getString("tripId");
+
+        Log.d("DEBUG:tripID",tripID);
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
@@ -69,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
             } else {
 
                 ActivityCompat.requestPermissions(HomeActivity.this,
-                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         }
@@ -83,6 +111,8 @@ public class HomeActivity extends AppCompatActivity {
         rvToBuyItem = (RecyclerView) findViewById(R.id.rvRequest);
         // Initialize contacts
         items = new ArrayList<>();
+
+        getItemList(tripID);
 //        items = Item.createItemList(1);
         // Create adapter passing in the sample user data
         itemAdapter = new ItemAdapter(this,items);
@@ -93,16 +123,49 @@ public class HomeActivity extends AppCompatActivity {
         rvToBuyItem.setLayoutManager(linearLayoutManager);
         rvToBuyItem.setHasFixedSize(true);
 
+
+
         ItemClickSupport.addTo(rvToBuyItem).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 // do it
-                Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+                Intent i = new Intent(getApplicationContext(), DetailsActivity.class);
                 i.putExtra("item", Parcels.wrap(items.get(position)));
-                startActivity(i);
+                i.putExtra("tripName", tripName);
+                i.putExtra("tripId", tripID);
+                i.putExtra("transitionName", ViewCompat.getTransitionName(v.findViewById(R.id.ivProduct)));
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        HomeActivity.this,
+                        v.findViewById(R.id.ivProduct),
+                        ViewCompat.getTransitionName(v.findViewById(R.id.ivProduct)));
+
+                startActivity(i, options.toBundle());
+                //startActivity(i);
             }
         });
 
+        ItemClickSupport.addTo(rvToBuyItem).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                deleteItem(tripID,items.get(position).getItemId());
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    public void onChargeAction(MenuItem mi) {
+        Intent i = new Intent(getApplicationContext(),ChargeActivity.class);
+        i.putExtra("tripID",tripID);
+        startActivity(i);
     }
 
     private void createItem() {
@@ -204,9 +267,19 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Item item = new Item(true,imageURI.toString(),"",0.0);
-            items.add(0,item);
-            itemAdapter.notifyItemInserted(0);
+            Date createTime = new Date();
+
+            writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",0.0,false,sdf.format(createTime),(-1)* createTime.getTime());
+            Item item = new Item(key,false,imageURI.toString(),"",0.0,"","","",0.0,"",false,sdf.format(createTime),(-1)* createTime.getTime());
+
+//            items.add(0,item);
+//            itemAdapter.notifyItemInserted(0);
+
+            Intent i = new Intent(getApplicationContext(),DetailsActivity.class);
+            i.putExtra("item", Parcels.wrap(item));
+            i.putExtra("tripId", tripID);
+            startActivity(i);
+
         }
     }
 
@@ -230,6 +303,80 @@ public class HomeActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    //write
+    private void writeItemList(String tripId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency, String priceCurrency,Double targetPrice, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+        // Create new item at /user-buylists/$userid/$buylistid and at
+        //String key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        key = mDatabase.child("buylist-items").child(tripId).push().getKey();
+        Log.e("DEBUG",tripId + " " + key);
+        Item item = new Item(key, isBuy,imageUrl,owner,price,location,priceTagImageUrl,targetCurrency,targetPrice,priceCurrency,isPaid, createdTime,createdTimeStampOrder);
+
+        Map<String, Object> itemValues = item.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/buylist-items/" + tripId + "/" + key, itemValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    //read
+    private void getItemList(String tripId) {
+
+        Query myTopItemsQuery = mDatabase.child("buylist-items").child(tripId).orderByChild("createdTimeStampOrder").limitToFirst(100);
+        myTopItemsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot != null)
+                {
+                    Log.e("DEBUG", "not null");
+                    items.clear();
+                    for (DataSnapshot itemSnapshot: dataSnapshot.getChildren()) {
+                        // TODO: handle the post
+                        Map<String, Object> itemValues = (Map<String, Object>) itemSnapshot.getValue();
+                        Log.e("DEBUG", String.valueOf(itemValues.get("price")));
+                        Double targetPrice = 0.0;
+                        if(itemValues.get("targetPrice")!= null){
+                            targetPrice=((Number)itemValues.get("targetPrice")).doubleValue();
+                        }
+                        Item item = new Item((String)itemValues.get("itemId"),(boolean)itemValues.get("isBuy"),(String)itemValues.get("imageUrl"),(String)itemValues.get("owner"),((Number)itemValues.get("price")).doubleValue(),(String)itemValues.get("location"),(String)itemValues.get("priceTagImageUrl"),(String)itemValues.get("targetCurrency"),targetPrice,(String)itemValues.get("priceCurrency"),(boolean)itemValues.get("isPaid"),(String)itemValues.get("createdTime"), (Long)itemValues.get("createdTimeStampOrder"));
+                        Log.e("DEBUG", String.valueOf(item.getOwner()));
+                        items.add(item);
+
+                    }
+                    itemAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("DEBUG", "loadPost:onCancelled", databaseError.toException());
+
+            }
+        });
+    }
+
+    //delete
+    private void deleteItem(String tripId, String itemId) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).removeValue();
+    }
+
+    //update
+    public void updateIsBuy(String tripId, String itemId, boolean isBuy) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).child("isBuy").setValue(isBuy);
+    }
+
+    //update
+    public void updateIsPaid(String tripId, String itemId, boolean isPaid) {
+        mDatabase.child("buylist-items").child(tripId).child(itemId).child("isPaid").setValue(isPaid);
+    }
+
+    public String getTripID(){
+        return tripID;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.irene.fintrip.model;
 
+import com.google.firebase.database.Exclude;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -105,7 +106,56 @@ public class Rates {
     @SerializedName("EUR")
     @Expose
     private Double eUR;
+
+    public Double getNTD() {
+        return NTD;
+    }
+
+    public void setNTD(Double NTD) {
+        this.NTD = NTD;
+    }
+
+    private Double NTD;
+    private Double uSD;
+
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("AUD", aUD);
+        result.put("BGN", bGN);
+        result.put("BRL", bRL);
+        result.put("CAD", cAD);
+        result.put("CHF", cHF);
+        result.put("CNY", cNY);
+        result.put("CZK", cZK);
+        result.put("DKK", dKK);
+        result.put("GBP", gBP);
+        result.put("HKD", hKD);
+        result.put("HRK", hRK);
+        result.put("HUF", hUF);
+        result.put("IDR", iDR);
+        result.put("ILS", iLS);
+        result.put("INR", iNR);
+        result.put("JPY", jPY);
+        result.put("KRW", kRW);
+        result.put("MXN", mXN);
+        result.put("MYR", mYR);
+        result.put("NOK", nOK);
+        result.put("NZD", nZD);
+        result.put("PHP", pHP);
+        result.put("PLN", pLN);
+        result.put("RON", rON);
+        result.put("RUB", rUB);
+        result.put("SEK", sEK);
+        result.put("SGD", sGD);
+        result.put("THB", tHB);
+        result.put("TRY", tRY);
+        result.put("ZAR", zAR);
+        result.put("USD", uSD);
+        return result;
+    }
 
     public Double getAUD() {
         return aUD;
@@ -339,7 +389,7 @@ public class Rates {
         this.tRY = tRY;
     }
 
-    /*
+
     public Double getUSD() {
         return uSD;
     }
@@ -347,7 +397,7 @@ public class Rates {
     public void setUSD(Double uSD) {
         this.uSD = uSD;
     }
-    */
+
     public Double getZAR() {
         return zAR;
     }
@@ -364,6 +414,13 @@ public class Rates {
         this.additionalProperties.put(name, value);
     }
 
+    public Rates(){}
+
+    public Rates(Double JPY, Double USD){
+        jPY = JPY;
+        uSD = USD;
+    }
+
     // TODO: 3/19/2017
     public Double get(String currency){
         switch (currency){
@@ -373,8 +430,10 @@ public class Rates {
                 return getKRW();
             case "CNY":
                 return getCNY();
+            case "USD":
+                return getUSD();
             default:
-                return getJPY();
+                return getUSD();
         }
     }
 

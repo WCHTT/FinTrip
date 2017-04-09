@@ -1,6 +1,11 @@
 package com.irene.fintrip;
 
+import com.google.firebase.database.Exclude;
+
 import org.parceler.Parcel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ChaoJung on 2017/3/20.
@@ -12,11 +17,48 @@ public class Item {
     public Item() {
     }
 
-    public Item(boolean isBuy, String imageUrl, String owner, Double price) {
+    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price) {
+        this.itemId = itemId;
         this.isBuy = isBuy;
         this.imageUrl = imageUrl;
         this.owner = owner;
         this.price = price;
+    }
+
+    public Item(String itemId, boolean isBuy, String imageUrl, String owner, Double price, String location, String priceTagImageUrl, String targetCurrency,Double targetPrice, String priceCurrency, boolean isPaid, String createdTime, Long createdTimeStampOrder) {
+        this.itemId = itemId;
+        this.isBuy = isBuy;
+        this.imageUrl = imageUrl;
+        this.owner = owner;
+        this.price = price;
+        this.location = location;
+        this.priceTagImageUrl = priceTagImageUrl;
+        this.targetCurrency = targetCurrency;
+        this.targetPrice = targetPrice;
+        this.priceCurrency = priceCurrency;
+        this.isPaid = isPaid;
+        this.createdTime = createdTime;
+        this.createdTimeStampOrder = createdTimeStampOrder;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("itemId", itemId);
+        result.put("isBuy", isBuy);
+        result.put("imageUrl", imageUrl);
+        result.put("owner", owner);
+        result.put("price",price);
+        result.put("targetPrice",targetPrice);
+        result.put("location", location);
+        result.put("priceTagImageUrl", priceTagImageUrl);
+        result.put("targetCurrency", targetCurrency);
+        result.put("priceCurrency", priceCurrency);
+        result.put("isPaid",isPaid);
+        result.put("createdTime",createdTime);
+        result.put("createdTimeStampOrder",createdTimeStampOrder);
+
+        return result;
     }
 
     public void setBuy(boolean buy) {
@@ -35,6 +77,18 @@ public class Item {
         this.price = price;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setPriceTagImageUrl(String priceTagImageUrl) {
+        this.priceTagImageUrl = priceTagImageUrl;
+    }
+
+    public void setTargetCurrency(String targetCurrency) {
+        this.targetCurrency = targetCurrency;
+    }
+
     public boolean isBuy() {
         return isBuy;
     }
@@ -51,9 +105,80 @@ public class Item {
         return price;
     }
 
+    public String getLocation() {
+        return location;
+    }
 
+    public String getPriceTagImageUrl() {
+        return priceTagImageUrl;
+    }
+
+    public String getTargetCurrency() {
+        return targetCurrency;
+    }
+
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public boolean isPaid() {
+
+        return isPaid;
+    }
+
+    public String getPriceCurrency() {
+        return priceCurrency;
+    }
+
+    public void setPriceCurrency(String priceCurrency) {
+        this.priceCurrency = priceCurrency;
+    }
+
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Long getCreatedTimeStampOrder() {
+        return createdTimeStampOrder;
+    }
+
+    public void setCreatedTimeStampOrder(Long createdTimeStampOrder) {
+        this.createdTimeStampOrder = createdTimeStampOrder;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public void setTargetPrice(Double targetPrice) {
+        this.targetPrice = targetPrice;
+    }
+
+    public Double getTargetPrice() {
+
+        return targetPrice;
+    }
+
+    String itemId;
     boolean isBuy;
     String imageUrl;
     String owner;
     Double price;
+    Double targetPrice;
+    String location;
+    String priceTagImageUrl;
+    String targetCurrency;
+    String priceCurrency; /*local: travel location*/
+    boolean isPaid; /*is owner paid for this item or not*/
+    String createdTime;
+    Long createdTimeStampOrder;
 }
