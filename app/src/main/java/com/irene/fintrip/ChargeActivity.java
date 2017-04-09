@@ -131,7 +131,7 @@ public class ChargeActivity extends AppCompatActivity {
                             else {
                                 Double priceUpdate;
                                 List<String> ListItemID = new ArrayList<String>();
-                                priceUpdate = ((Number)itemValues.get("targetPrice")).doubleValue() + ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")).getTotalPrice();
+                                priceUpdate = ((Number)itemValues.get("targetPrice")).doubleValue() + ownerMap.get(owner).get(itemValues.get("targetCurrency")).getTotalPrice();
                                 ListItemID = ownerMap.get(owner).get(itemValues.get("targetCurrency")).getItemID();
                                 ListItemID.add((String)itemValues.get("itemId"));
                                 Receipe receipe = new Receipe(priceUpdate,ListItemID);

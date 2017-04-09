@@ -102,6 +102,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>  {
         final ImageView ivBought = viewHolder.ivBought;
         final ImageView ivPaid = viewHolder.ivPaid;
 
+        ivBought.setColorFilter(Color.parseColor("#d4d3d3"), PorterDuff.Mode.MULTIPLY);
+        ivPaid.setColorFilter(Color.parseColor("#d4d3d3"), PorterDuff.Mode.MULTIPLY);
+
         if(item.isBuy()){
             ivPaid.setVisibility(View.VISIBLE);
             ivBought.setColorFilter(Color.parseColor("#B2FF59"), PorterDuff.Mode.MULTIPLY);
