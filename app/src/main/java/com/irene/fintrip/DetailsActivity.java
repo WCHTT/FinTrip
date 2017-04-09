@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -101,6 +102,8 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
     private LocationManager lms;
     private String gpsProvider;
     private String networkProvider;
+    LocationManager mLocationManager;
+    private String bestProvider = LocationManager.GPS_PROVIDER;
     private static final String[] LOCATION_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -215,21 +218,34 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
             owner.setVisibility(View.GONE);
         }
 
+        // product price
         if(item.getPrice()!=0.0){
             itemPrice = item.getPrice();
             etPrice.setText(item.getPrice().toString());
-            priceCurrency.setText(item.getPriceCurrency());
-            tvLocation.setText(item.getLocation());
-
-            prepareCurrencyExchangeSection(item.getPriceCurrency());
         }
         else{
             // hide price editText, location and section below
             etPrice.setVisibility(View.INVISIBLE);
+        }
+
+        // price currency
+        if(item.getPriceCurrency()!=null && !item.getPriceCurrency().equals("")){
+            priceCurrency.setText(item.getPriceCurrency());
+            prepareCurrencyExchangeSection(item.getPriceCurrency());
+        }
+        else{
             priceCurrency.setVisibility(View.INVISIBLE);
+            rlTargetPrice.setVisibility(View.INVISIBLE);
+        }
+
+        // location
+        if(item.getLocation()!=null && !item.getLocation().equals("")){
+            tvLocation.setText(item.getLocation());
+        }
+        else{
+
             tvLocation.setVisibility(View.INVISIBLE);
             locationMark.setVisibility(View.INVISIBLE);
-            rlTargetPrice.setVisibility(View.INVISIBLE);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -478,7 +494,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         final float latitude = (float) location.getLatitude();
         final float longitude = (float) location.getLongitude();
         Log.d("DEBUG:location",String.valueOf(latitude) + "," + String.valueOf(longitude));
-        // Helper.log(TAG, "latitude: " +latitude);
+
         List<Address> addresses = null;
         Geocoder gcd = new Geocoder(getBaseContext());
 
@@ -519,6 +535,23 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         }
 
         return false;
+    }
+
+    private Location getLastKnownLocation() {
+        mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
     private void locationServiceInitial() {
@@ -591,8 +624,16 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
         etPrice.setText(price);
         itemPrice = Double.parseDouble(price);
         item.setPrice(itemPrice);
-        if(address!=null){
-            Locale locale = address.getLocale();
+
+        Address lastKnownAddress = null;
+        if(address==null){
+            // try get address from latest gps location if address is null
+            lastKnownAddress = updateForCurrentLocation(getLastKnownLocation());
+        }
+
+        if(address!=null || lastKnownAddress!=null){
+            Address currentAddress = address!=null? address:lastKnownAddress;
+            Locale locale = currentAddress.getLocale();
 
             // update view
             String priceCurrencyInfo = displayCurrencyInfoForLocale(locale);
@@ -601,7 +642,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
 
             priceCurrency.setVisibility(View.VISIBLE);
 
-            String location = address.getLocality();
+            String location = currentAddress.getLocality();
             tvLocation.setText(location);
             item.setLocation(location);
 
@@ -649,7 +690,7 @@ public class DetailsActivity extends AppCompatActivity  implements EditItemFragm
                     .load(imageURI.toString())
                     //.load("http://pic.pimg.tw/omifind/1468387801-1461333924.jpg")
                     .centerCrop()
-                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(detailsPic);
 
             updateItemInDB();
