@@ -270,7 +270,7 @@ public class HomeActivity extends AppCompatActivity {
             Date createTime = new Date();
 
             writeItemList(tripID,false,imageURI.toString(),"",0.0,"","","","",0.0,false,sdf.format(createTime),(-1)* createTime.getTime());
-            Item item = new Item(key,false,imageURI.toString(),"",0.0);
+            Item item = new Item(key,false,imageURI.toString(),"",0.0,"","","",0.0,"",false,sdf.format(createTime),(-1)* createTime.getTime());
 
 //            items.add(0,item);
 //            itemAdapter.notifyItemInserted(0);
