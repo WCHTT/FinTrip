@@ -116,7 +116,7 @@ public class ChargeActivity extends AppCompatActivity {
                             HashMap<String, Receipe> currencyMap = new HashMap<String, Receipe>();
                             List<String> ListItemID = new ArrayList<String>();
                             ListItemID.add((String) itemValues.get("itemId"));
-                            Receipe receipe = new Receipe(((Number)itemValues.get("price")).doubleValue(),ListItemID);
+                            Receipe receipe = new Receipe(((Number)itemValues.get("targetPrice")).doubleValue(),ListItemID);
 
                             currencyMap.put((String)itemValues.get("targetCurrency"),receipe);
                             ownerMap.put(owner,currencyMap);
@@ -125,13 +125,13 @@ public class ChargeActivity extends AppCompatActivity {
                             if (ownerMap.get(owner).get(itemValues.get("targetCurrency")) == null) {
                                 List<String> ListItemID = new ArrayList<String>();
                                 ListItemID.add((String) itemValues.get("itemId"));
-                                Receipe receipe = new Receipe(((Number)itemValues.get("price")).doubleValue(),ListItemID);
+                                Receipe receipe = new Receipe(((Number)itemValues.get("targetPrice")).doubleValue(),ListItemID);
                                 ownerMap.get(owner).put((String) itemValues.get("targetCurrency"), receipe);
                             }
                             else {
                                 Double priceUpdate;
                                 List<String> ListItemID = new ArrayList<String>();
-                                priceUpdate = ((Number)itemValues.get("price")).doubleValue() + ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")).getTotalPrice();
+                                priceUpdate = ((Number)itemValues.get("targetPrice")).doubleValue() + ownerMap.get(itemValues.get("owner")).get(itemValues.get("targetCurrency")).getTotalPrice();
                                 ListItemID = ownerMap.get(owner).get(itemValues.get("targetCurrency")).getItemID();
                                 ListItemID.add((String)itemValues.get("itemId"));
                                 Receipe receipe = new Receipe(priceUpdate,ListItemID);
